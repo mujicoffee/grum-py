@@ -1,0 +1,77 @@
+{% extends "StaffAdminbase.html" %}
+
+{% block title %}Add Students - {{ classroom.code }}{% endblock %}
+{% block goback %}
+<a href="{{ url_for('staff.classroom_details', code=classroom.code) }}" style="display: flex; align-items: center; width: fit-content; text-decoration: none;">
+   
+    <p style="color: #E8E832; margin: 0; margin-left: 0.7vw; font-size: 2vmin;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;"> &larr; &nbsp; Back to {{classroom.code}}</p>
+</a>
+{% endblock %}
+{% block pageTitle %}Add students to {{ classroom.code }}{% endblock %}
+{% block content %}
+<div class="roomDetailsCont">
+
+    <ul class="custom-nav-pills mb-3" id="pills-tab" role="tablist">
+        <li class="custom-nav-item" role="presentation">
+            <button class="custom-nav-link active" id="pills-modules-tab" data-bs-toggle="pill" data-bs-target="#pills-multiple" type="button" role="tab" aria-controls="pills-multiple" aria-selected="true">Multiple</button>
+        </li>
+        <li class="custom-nav-item" role="presentation">
+            <button class="custom-nav-link" id="pills-quizzes-tab" data-bs-toggle="pill" data-bs-target="#pills-individual" type="button" role="tab" aria-controls="pills-idnividual" aria-selected="false">Individual</button>
+          
+        </li>
+      
+    </ul>
+
+
+    <div  style="color:white;" class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-multiple" role="tabpanel" aria-labelledby="pills-multiple-tab">
+
+             <!-- Display existing file if available -->
+             <div class="mb-3">
+                <p style="color: white; font-size: 1.5em;"><strong>Download the Student Template:</strong></p>
+                <a href="{{ url_for('static', filename='uploads/student_template.xlsx') }}" class="btn btn-secondary" download="">Download Student Template</a>
+            </div>
+            
+            <form method="post" action="{{ url_for('staff.add_students', code=classroom.code) }}" enctype="multipart/form-data">
+                {{ form_students_file.hidden_tag() }}
+                <div class="form-group">
+                    {{ form_students_file.students_file.label }}
+                    <!-- 'accept' attribute to restrict file types -->
+                    {{ form_students_file.students_file(class="form-control", accept=".xlsx") }}
+                </div>
+                <br>
+                {{ form_students_file.submit(class="addbutton", value="Add Students") }}
+            </form>
+        </div>        
+        <div class="tab-pane fade" id="pills-individual" role="tabpanel" aria-labelledby="pills-individual-tab">
+            <form method="post" action="{{ url_for('staff.add_students', code=classroom.code) }}" enctype="multipart/form-data">
+                {{ form_students.hidden_tag() }}
+                <div class="form-group">
+                    {{ form_students.students_name.label }}
+                    {{ form_students.students_name(class="form-control", placeholder="Enter student name") }}
+                </div>
+                <br>
+                <div class="form-group">
+                    {{ form_students.students_email.label }}
+                    {{ form_students.students_email(class="form-control", placeholder="Enter student email") }}
+                </div>
+                <br>
+                {{ form_students.submit( type="submit", class="addbutton", value="Add Student") }}
+            </form>
+        </div>
+    </div>
+</div>
+<style>
+#SclassroomNav{
+    background-color: var(--color-snackbar-bg); 
+    border-radius: 10px;
+}
+
+
+.form-group {
+    font-size: 2em;
+    color: #e7e783;
+    margin-top: 1vh;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "StaffAdminbase.html" %}
+
+{% block title %}Classrooms{% endblock %}
+{% block pageTitle %}Classroom  {% endblock %}
+{% block content %}
+  
+    
+
+     
+
+ 
+   
+        
+        <div class="roomDetailsCont">
+
+   
+            {% if classroom_data %}
+                {% for classroom in classroom_data %}
+             
+                    <div class="classroomcard">
+                        <a href="{{ url_for('staff.classroom_details', code=classroom.code) }} " style="text-decoration:none;">
+                        <div class="classroomcardContent">
+                            <h3 style="color: #E8E832;">{{ classroom.code }}</h3>
+                            <div class="classroomStudentInfo"> 
+                                 <img src="{{ url_for('static', filename='images/pfp/default.png') }}" alt="Student Icon" class="studentIcon">
+                                <span class="studentCount">{{ classroom.student_count }}</span>
+                               
+                               
+                            </div>
+
+                        </div>
+                    </a>
+                    </div>
+
+                {% endfor %}
+            {% else %}
+            <div class="alert alert-info" style="font-size:13px; margin:0; text-align:left; width:100%; " role="alert">
+               You have not been assigned a classroom yet.
+            </div>
+            {% endif %}
+      </div>
+      <style>
+      #SclassroomNav{
+        background-color: var(--color-snackbar-bg); 
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}
+   
+
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+{% endblock %}
+
+{% block styles %}
+
+{% endblock %}

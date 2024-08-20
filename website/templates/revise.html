@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revise Incorrect Questions</title>
+    <link rel="icon" href="/static/images/logo/grumPY.png" type="image/png">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="reviseContainer">
+
+    <img id="reviseBG" src="{{ url_for('static', filename='images/bg/quizzesBG.png') }}" alt="Background Image">
+    <div class="reviseoverlay"></div>
+    <div id="snackbar">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+           
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+        
+          {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Fixed Title -->
+    <div class="fixed-title">
+        <h1>Revision for {{quiz.title}}</h1>
+    </div>
+
+    <!-- Fixed Arrow on the Left -->
+    <div class="arrow-left-container">
+        {% if quiz_id - 1 == 0 %}
+        <a href="{{ url_for('student.displayQuiz') }}" class="arrow-left"> Back to quiz  &nbsp; &larr;</a>
+        {% else %}
+        <a href="{{ url_for('student.revise', quiz_id = quiz_id - 1) }}" class="arrow-left"> Previous  &nbsp; &larr;</a>
+        {% endif %}
+    </div>
+
+    <!-- Main Content -->
+    <div class="revisecontent">
+        <ul style="margin-right: 20px;   font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; list-style-type: none;">
+            {% for item in revision_data %}
+                <li style="background-color: #6eb6ff9f; margin-bottom:30px; padding:15px; border-radius:5px;">
+                    <p style="color: #E8E832;"><strong>Question {{ item.number }}:</strong> {{ item.question }}</p>
+                    <ul style="margin-bottom: 10px;">
+                        <li class="{{ 'correct' if item.correct_option == 'A' else 'incorrect' }}">A: {{ item.options['A'] }}</li>
+                        <li class="{{ 'correct' if item.correct_option == 'B' else 'incorrect' }}">B: {{ item.options['B'] }}</li>
+                        <li class="{{ 'correct' if item.correct_option == 'C' else 'incorrect' }}">C: {{ item.options['C'] }}</li>
+                        <li class="{{ 'correct' if item.correct_option == 'D' else 'incorrect' }}">D: {{ item.options['D'] }}</li>
+                    </ul>
+                    <p><strong style="color: white;">Your Answer: &nbsp; </strong> <span  style="color: rgb(255, 11, 11);" class="{{ 'highlight incorrect' if item.selected_option != item.correct_option else 'highlight correct' }}">{{ item.selected_option }}</span></p>
+                    <p><strong style="color: white;">Correct Answer: &nbsp;</strong> <span style="color: rgb(42, 255, 106);">{{ item.correct_option }}</span></p>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Fixed Arrow on the Right -->
+    <div class="arrow-right-container">
+
+        <a href="{{ url_for('student.revise', quiz_id = quiz_id + 1) }}" class="arrow-right">Next &nbsp; &rarr;</a>
+    </div>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
+
+    <style>
+        .correct { color: rgb(42, 255, 106); }
+        .incorrect { color: rgb(0, 0, 0); }
+        .highlight { font-weight: bold; }
+
+        /* Fixed title styling */
+
+
+      
+    </style>
+
+</body>
+</html>

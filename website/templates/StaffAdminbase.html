@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" href="/static/images/logo/grumPY.png" type="image/png">
+
+    <!-- Bootstrap CSS library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <!-- Link to custom CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    
+    <!-- Title block to be overridden by individual pages -->
+    <title>{% block title %}{% endblock %}</title>
+</head>
+
+<!-- Body class block to facilitate CSS and JS implementation -->
+<body style="overflow: hidden;" >
+
+    <div class="profileBase">
+        <label class="profile-pic" style="width: 6vmin; height:6vmin;">
+             <img src="{{ url_for('static', filename='images/pfp/'+ current_user.image_file ) }}" alt="Profile" style="width:3vmin; height:auto;">
+        </label>
+        <span class="profile-name" style="font-size:2.5vmin">{{current_user.name}} <br>
+        <p style="font-size: 1.5vmin; opacity:1; margin:0;color:#E8E832">({{current_user.role}} )</p>
+    
+      </span>
+       
+    </div>
+    <video  muted  id="staffsBG">
+        <source src="{{ url_for('static', filename='images/bg/otp.mp4') }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div id="snackbar">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {{ message }}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+  
+  
+    </div>
+
+
+        <!-- Background Video -->
+         <nav class="navbar">
+            <div class="navbarContent">
+                <div class="LogoAndText">
+                    <img class="navbarLogo" src="{{ url_for('static', filename='images/logo/grumPY.png') }}" alt="Logo">
+                    <img class="navbarText" src="{{ url_for('static', filename='images/logo/grumPYText.png') }}" alt="Text">
+                </div>
+                <ul class="navbarList">
+                  
+
+
+                        {% if current_user.role == 'admin' %}
+                        <li class="nav-item">
+                        <div id="AdashboardNav" class="nav-item-container" style=" border-radius: 10px;">
+                            <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                            <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Overview</a>
+                        </div>
+
+                    </li>
+
+
+
+
+                   
+
+
+
+                          <li class="nav-item">
+
+                          <div id="AteamNav" class="nav-item-container" style=" border-radius: 10px;">
+                            <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                            <a class="nav-link" href="{{ url_for('admin.teaching_team') }}">Teaching team</a>
+                          </div>
+                        </li>
+                         
+                          <li class="nav-item">
+                        <div id="AlogNav" class="nav-item-container" style=" border-radius: 10px;">
+                            <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                            <a class="nav-link" href="{{ url_for('admin.logs') }}">Logs</a>
+                        </div>
+
+                        <li class="nav-item">
+                            <div id="AmodulesNav" class="nav-item-container" style=" border-radius: 10px;">
+                                <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                                <a class="nav-link" href="{{ url_for('admin.view_modules') }}">Modules</a>
+                            </div>
+    
+                        </li>
+    
+                        <li class="nav-item">
+                            <div id="AquizzesNav" class="nav-item-container" style=" border-radius: 10px;">
+                                <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                                <a class="nav-link" href="{{ url_for('admin.quizzes') }}">Quiz pool</a>
+                            </div>
+    
+                        </li>
+
+                       
+                    {% elif current_user.role == 'staff' %}
+
+                
+                    <li class="nav-item">
+                    <div id="SclassroomNav" class="nav-item-container" style=" border-radius: 10px;">
+                        <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                        <a class="nav-link" href="{{ url_for('staff.classroom') }}">Classrooms</a>
+                    </div>
+                </li>
+                    <li class="nav-item">
+                    <div id="SquizzesNav" class="nav-item-container" style=" border-radius: 10px;">
+                        <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                        <a class="nav-link" href="{{ url_for('staff.quizzes') }}">Quizzes</a>
+                    </div>
+                </li>
+                    {% endif %}
+
+
+                  
+                   
+                    <li class="nav-item">
+                        <div id="LogoutNav" class="nav-item-container">
+                            <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Logout Icon">
+                            <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    
+
+   
+
+        <div class="top-rectangle">
+            <span class="staff-current-week">Current Week: {{ current_week }}</span>
+            <span id="date-time" class="staff-current-week" style="color:#E8E832"></span> <!-- Container for real-time display -->
+        </div>
+
+ 
+    
+   
+        {% include 'loading.html' %}
+    
+      
+        
+        <div class="staffMainContent"> 
+             <div> 
+            {% block goback %}{% endblock %}
+            <p style="font-size: 2.2rem;color:white;">
+                {% block pageTitle %}{% endblock %}
+            </p>
+        </div>
+            {% block content %}{% endblock %}
+        </div>
+
+
+    <!-- Bootstrap JavaScript library -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    
+
+    <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
+    
+    <script type="text/javascript" src="{{ url_for('static', filename='staff_admin.js') }}"></script>
+
+</body>
+
+<style>
+    table {
+        table-layout: fixed;
+
+      }
+      th, td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+        white-space: nowrap; /* Prevents text from wrapping */
+        overflow: hidden; /* Hides overflow content */
+        text-overflow: ellipsis; /* Adds ellipsis for overflow text */
+    }
+
+
+    
+
+</style>
+</html>

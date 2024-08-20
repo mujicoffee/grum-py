@@ -1,0 +1,35 @@
+{% extends "StaffAdminbase.html" %}
+
+{% block title %}Modules{% endblock %}
+{% block pageTitle %}Modules{% endblock %}
+{% block content %}
+<div class="roomDetailsCont">
+
+    <ul style="padding-right: 10px;">
+        {% for module in modules %}
+         
+            <a href="{{ url_for('admin.view_labsheets', module_id=module.id) }}" style="text-decoration:none;">
+                <div class="classroomcard">
+               
+                <div class="classroomcardContent">
+                    <li style="list-style-type:none; ">
+                        <h3 style="color:#E8E832;">{{module.id}}. &nbsp;{{ module.title }}</h3>
+                        <p>{{ module.description }}</p>
+                       
+                    </li>
+                    
+                  </div>
+                          
+                </div>
+                </a>
+        {% endfor %}
+    </ul>
+</div>
+<style>
+
+    #AmodulesNav{
+        background-color: var(--color-snackbar-bg); 
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}

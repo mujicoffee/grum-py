@@ -1,0 +1,188 @@
+
+{% extends "StaffAdminbase.html" %}
+
+{% block title %}Quizzes for Module {{ module_id }}{% endblock %}
+{% block pageTitle %} {% for quiz in quizzes_pagination.items %}
+Questions for {{quiz.title}} 
+
+<a href="{{ url_for('admin.add_quiz', module_id=module_id, quiz_id=quiz_id) }}" class="addbutton" style="float: right; margin-right:2vw">
+    Add question(s)
+</a>
+{% endfor %}
+{% endblock %}
+
+{% block goback %}
+<a href="{{ url_for('admin.quizzes') }}" style="display: flex; align-items: center; width: fit-content; text-decoration: none;">
+   
+    <p style="color: #E8E832; margin: 0; margin-left: 0.7vw; font-size: 2vmin;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;"> &larr; &nbsp; Back to quizzes</p>
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="roomDetailsCont">
+
+
+    <!-- Search -->
+  
+    <form action="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id) }}" method="GET" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Search questions" value="{{ search_query }}" style="max-width: 300px;">
+            <button class="btn btn-primary" type="submit">
+                <i class="bi bi-search"></i> Search
+            </button>
+            {% if search_query %}
+                <a href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id) }}" class="btn btn-danger ms-2">
+                    <i class="bi bi-x"></i> Cancel
+                </a>
+            {% endif %}
+        </div>
+    </form>
+
+    <!-- Pagination Controls for Questions -->
+    {% if quiz_id %}
+
+    <nav aria-label="Questions pagination" class="mb-4">
+        <ul class="pagination justify-content-center">
+            {% if quiz_questions_pagination.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id, questions_page=quiz_questions_pagination.prev_num) }}">Previous</a>
+                </li>
+            {% endif %}
+            {% for page_num in quiz_questions_pagination.iter_pages() %}
+                {% if page_num %}
+                    <li class="page-item {% if page_num == quiz_questions_pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id, questions_page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                {% endif %}
+            {% endfor %}
+            {% if quiz_questions_pagination.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id, questions_page=quiz_questions_pagination.next_num) }}">Next</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Display Questions -->
+    <div class="list-group">
+        {% set base_index = (quiz_questions_pagination.page - 1) * quiz_questions_pagination.per_page %}
+        {% for question in quiz_questions_pagination.items %}
+            <div class="list-group-item border rounded-3 shadow-sm mb-2 p-3">
+                <li class="list-group-item">
+                    <strong style="font-size:20px;">{{ base_index + loop.index }}. {{ question.question }}</strong><br>
+                    <span style="color: {% if question.correct_option == 'A' %}green{% else %}red{% endif %};">A: {{ question.option_A }}</span><br>
+                    <span style="color: {% if question.correct_option == 'B' %}green{% else %}red{% endif %};">B: {{ question.option_B }}</span><br>
+                    <span style="color: {% if question.correct_option == 'C' %}green{% else %}red{% endif %};">C: {{ question.option_C }}</span><br>
+                    <span style="color: {% if question.correct_option == 'D' %}green{% else %}red{% endif %};">D: {{ question.option_D }}</span><br>
+                    <br>
+                    Correct Answer: <span class="badge bg-primary">{{ question.correct_option }}</span></p>
+                </li>
+                <div class="d-flex justify-content-between">
+                    <!-- Edit Button -->
+                    <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editQuestionModal{{ question.id }}">
+                        <i class="bi bi-pencil"></i> Edit
+                    </button>
+                    <!-- Delete Button -->
+                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteQuestionModal{{ question.id }}">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
+                    <!-- Delete Form for Each Question -->
+                   
+                </div>
+
+                <!-- Edit Question Modal --> 
+                <div class="modal fade" id="editQuestionModal{{ question.id }}" tabindex="-1" aria-labelledby="editQuestionModalLabel" aria-hidden="true" >
+                    <div class="modal-dialog" style="width: 50vw;">
+                        <div class="modal-content" style="height: 90vh;">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editQuestionModalLabel">Edit Question</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ url_for('admin.edit_question', question_id=question.id) }}" method="post">
+                                    {{ edit_forms[question.id].hidden_tag() }}
+                                    <div class="mb-3">
+                                        {{ edit_forms[question.id].question.label(class="form-label") }}
+                                        {{ edit_forms[question.id].question(class="form-control") }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ edit_forms[question.id].option_A.label(class="form-label") }}
+                                        {{ edit_forms[question.id].option_A(class="form-control") }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ edit_forms[question.id].option_B.label(class="form-label") }}
+                                        {{ edit_forms[question.id].option_B(class="form-control") }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ edit_forms[question.id].option_C.label(class="form-label") }}
+                                        {{ edit_forms[question.id].option_C(class="form-control") }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ edit_forms[question.id].option_D.label(class="form-label") }}
+                                        {{ edit_forms[question.id].option_D(class="form-control") }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ edit_forms[question.id].correct_option.label(class="form-label") }}
+                                        <select name="{{ edit_forms[question.id].correct_option.name }}" class="form-select">
+                                            <option value="A" {% if edit_forms[question.id].correct_option.data == 'A' %}selected{% endif %}>A</option>
+                                            <option value="B" {% if edit_forms[question.id].correct_option.data == 'B' %}selected{% endif %}>B</option>
+                                            <option value="C" {% if edit_forms[question.id].correct_option.data == 'C' %}selected{% endif %}>C</option>
+                                            <option value="D" {% if edit_forms[question.id].correct_option.data == 'D' %}selected{% endif %}>D</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="addbutton">Save changes</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="deleteQuestionModal{{ question.id }}" tabindex="-1" aria-labelledby="deleteQuestionModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteQuestionModalLabel">Delete Question</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ url_for('admin.delete_question', question_id=question.id) }}" method="post">
+                                    {{ delete_forms[question.id].hidden_tag() }}
+                                    <p>Are you sure you want to delete this question?</p>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .list-group-item {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+    }
+
+    .list-group-item:hover {
+        background-color: #e9ecef;
+    }
+
+    .page-item.active .page-link {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .page-link {
+        border-radius: 0;
+    }
+</style>
+{% endblock %}

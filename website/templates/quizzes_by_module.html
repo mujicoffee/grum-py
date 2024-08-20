@@ -1,0 +1,116 @@
+{% extends "StaffAdminbase.html" %}
+
+{% block title %}Quizzes for Module {{ module_id }}{% endblock %}
+{% block pageTitle %}
+
+{% for title in titles %}
+Questions for {{title}}
+{% endfor %}
+
+{% endblock %}
+{% block goback %}
+<a href="{{ url_for('admin.quizzes') }}" style="display: flex; align-items: center; width: fit-content; text-decoration: none;">
+    <p style="color: #E8E832; margin: 0; margin-left: 0.7vw; font-size: 2vmin;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">&larr; &nbsp; Back to quizzes</p>
+</a>
+{% endblock %}
+{% block content %}
+
+    <div class="roomDetailsCont">
+      
+        <div class="text-center mb-3">
+            <a href="{{ url_for('admin.add_quiz') }}" class="btn btn-primary">Add Quiz</a>
+        </div>
+
+        <!-- Pagination Controls for Quizzes -->
+        <nav aria-label="Quiz pagination">
+            <ul class="pagination justify-content-center">
+                {% if quizzes_pagination.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.quizzes_by_module', module_id=module_id, page=quizzes_pagination.prev_num) }}">Previous</a>
+                    </li>
+                {% endif %}
+                {% for page_num in quizzes_pagination.iter_pages() %}
+                    {% if page_num %}
+                        <li class="page-item {% if page_num == quizzes_pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('admin.quizzes_by_module', module_id=module_id, page=page_num) }}">{{ page_num }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    {% endif %}
+                {% endfor %}
+                {% if quizzes_pagination.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.quizzes_by_module', module_id=module_id, page=quizzes_pagination.next_num) }}">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <!-- Display Quizzes -->
+        <ul class="list-group">
+            {% for quiz in quizzes_pagination.items %}
+                <li class="list-group-item">
+                    <h2>{{ quiz.title }}</h2>
+                    <p>{{ quiz.description }}</p>
+                    <a href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz.id) }}">View Questions</a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Pagination Controls for Questions if a quiz is selected -->
+        {% if quiz_id %}
+            <h2 class="text-center">Questions for Quiz ID: {{ quiz_id }}</h2>
+            <nav aria-label="Questions pagination">
+                <ul class="pagination justify-content-center">
+                    {% if quiz_questions_pagination.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id, questions_page=quiz_questions_pagination.prev_num) }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    {% for page_num in quiz_questions_pagination.iter_pages() %}
+                        {% if page_num %}
+                            <li class="page-item {% if page_num == quiz_questions_pagination.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id, questions_page=page_num) }}">{{ page_num }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if quiz_questions_pagination.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id, questions_page=quiz_questions_pagination.next_num) }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+
+            <!-- Display Questions -->
+            <ul class="list-group">
+                {% set base_index = (quiz_questions_pagination.page - 1) * quiz_questions_pagination.per_page %}
+                {% for question in quiz_questions_pagination.items %}
+                    <li class="list-group-item">
+                        <strong style="font-size:20px;">{{ base_index + loop.index }}. {{ question.question }}</strong><br>
+                        A: {{ question.option_A }}<br>
+                        B: {{ question.option_B }}<br>
+                        C: {{ question.option_C }}<br>
+                        D: {{ question.option_D }}<br>
+                        Correct Answer: {{ question.correct_option }}<br>
+                        <!-- Delete Form for Each Question -->
+                        <form action="{{ url_for('admin.delete_question', question_id=question.id) }}" method="post" style="display:inline;">
+                            {{ delete_forms[question.id].hidden_tag() }}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <style>
+
+        #AquizzesNav{
+            background-color: var(--color-snackbar-bg); 
+            border-radius: 10px;
+        }
+    </style>
+{% endblock %}

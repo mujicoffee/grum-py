@@ -1,0 +1,49 @@
+
+{% extends 'otpForgetBase.html' %}
+{% block title %} Verify OTP {% endblock %}
+  
+  {% block mainContent %}
+  <div class=" OtpForgetContainer">
+    <div class="OtpForgetCard">
+      <d`iv class="otp-forget-card-content">
+        <img src="{{ url_for('static', filename='images/otp/mail.png') }}" alt="otp" >
+        <p style="font-size: 35px; margin-bottom:5%;">OTP verification</p>
+        <p style="font-size:15px; color:rgb(255, 255, 255); ;">One Time Password (OTP) has been sent to <span style="color: #000000;">{{ censored_email }}</span></p>
+        <p style="font-size:15px; color:rgb(255, 255, 255); margin-top: 5%;">Enter the OTP below to verify it</p>
+        
+        <form id="otpForm" method="POST" action="{{ url_for('auth.verify_otp') }}" autocomplete="off">
+          {{ form.hidden_tag() }}
+          
+          <div class="otpForgetInput">
+            <input type="text" maxlength="1" class="otpNumber" autocomplete="off" />
+            <input type="text" maxlength="1" class="otpNumber" autocomplete="off" />
+            <input type="text" maxlength="1" class="otpNumber" autocomplete="off" />
+            <input type="text" maxlength="1" class="otpNumber" autocomplete="off" />
+            <input type="text" maxlength="1" class="otpNumber" autocomplete="off" />
+            <input type="text" maxlength="1" class="otpNumber" autocomplete="off" />
+          </div>
+
+          <div class="resend-otp">
+            <span class="resend" id="resend-text">Resend OTP</span>
+            <a href="#" id="resend-link" class="resend" style="display: none;">Resend OTP</a>
+            <span class="count" id="countdown">30s</span>
+          </div>
+          
+
+          <div class="button-group ">
+            <button type="button" id="verifyButton" ">Verify</button>
+          </div>
+        </form>
+
+        <form id="resendForm" method="POST" action="{{ url_for('auth.resend_otp') }}" style="display: none;">
+          {{ form.hidden_tag() }}
+          <input type="hidden" name="email" value="{{ email }}">
+        </form>
+        
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="{{ url_for('static', filename='otp.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "StaffAdminbase.html" %}
+{% block title %}Add Quiz{% endblock %}
+
+{% block pageTitle %}
+
+
+Add questions 
+
+
+{% endblock %}
+
+{% block goback %}
+{% for title in titles %}
+<a href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id) }}" style="display: flex; align-items: center; width: fit-content; text-decoration: none;">
+
+   
+    <p style="color: #E8E832; margin: 0; margin-left: 0.7vw; font-size: 2vmin;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">&larr; &nbsp; Back to {{title}}  </p>
+</a>
+{% endfor %}
+{% endblock %}
+{% block content %}
+<div class="roomDetailsCont">
+ 
+
+  
+
+    <!-- Display existing file if available -->
+    <div class="mb-3">
+        <p style="color: white; font-size:1.5em;"><strong>Download the Quiz Template:</strong></p>
+        <a href="{{ url_for('static', filename='uploads/quiz_template.xlsx') }}" class="btn btn-secondary" download>Download Quiz Template</a>
+    </div>
+
+    <!-- Form for uploading new file -->
+    <form method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.labsheet_file.label(class="form-label") }}
+            {{ form.labsheet_file(class="form-control", accept=".xlsx") }}
+        <div class="mb-3">
+            {{ form.submit(class="addbutton" ,style="float:right") }}
+        </div>
+    </form>
+</div>
+<style>
+    label{
+        font-size: 3em;
+        color: #e7e783;
+        margin-top: 1vh;
+    }
+    .form-group{
+        margin-bottom: 3vh;
+        
+    }
+.form-control{
+    font-size: 1.2em;
+}
+    #AquizzesNav{
+        background-color: var(--color-snackbar-bg); 
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}

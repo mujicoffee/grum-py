@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Labsheets for {{ module.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Labsheets for {{ module.title }}</h1>
+
+    <!-- Labsheets Table -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>View Labsheet</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for labsheet in labsheets %}
+            <tr>
+                <td>{{ labsheet.title }}</td>
+                <td>{{ labsheet.description }}</td>
+
+        
+              
+                <td><a href="{{ url_for('student.labsheet', labsheet_id=labsheet.id) }}">View Labsheet</a></td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Back to Dashboard Button -->
+    <a href="{{ url_for('student.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+{% endblock %}

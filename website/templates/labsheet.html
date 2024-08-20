@@ -1,0 +1,144 @@
+{% extends "baseModuleLabsheet.html" %}
+
+{% block title %}Modules{% endblock %}
+
+
+{% block classBG %}labsheetBG{% endblock %}
+{% block headerClass %}labsheetHeader{% endblock %}
+{% block goback %}
+<a href="{{ url_for('student.modules') }}" style="display: flex; align-items: center; width: fit-content; text-decoration: none;">
+    <img src="{{ url_for('static', filename='images/icons8/backwhite.png') }}" style="width: 50px; height: auto;" alt="Back">
+    <p style="color: white; margin: 0; margin-left: 0.7vw; font-size: 0.8rem;">back to modules</p>
+</a>
+
+
+
+
+
+{% endblock %}
+{% block heading %} 
+{{ labsheet.title }}:
+<br>
+<p>{{labsheet.description}}</p>
+{% endblock %}
+
+{% block maincontainer %}labsheetcontainer{% endblock %}
+{% block content %}
+<nav class="navbar">
+    <div class="navbarContent">
+        <div class="LogoAndText">
+            <img class="navbarLogo" src="{{ url_for('static', filename='images/logo/grumPY.png') }}" alt="Logo">
+            <img class="navbarText" src="{{ url_for('static', filename='images/logo/grumPYText.png') }}" alt="Text">
+        </div>
+        <ul class="navbarList">
+            <li class="nav-item">
+                <div id="dashboardNav" class="nav-item-container" >
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                    <a class="nav-link" href="{{ url_for('student.dashboard') }}">Dashboard</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div id="rankingNav" class="nav-item-container">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Ranking Icon">
+                    <a class="nav-link" href="{{ url_for('student.rankings') }}">Ranking</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div id="modulesNav" class="nav-item-container" style="background-color: var(--color-snackbar-bg); border-radius: 10px;" alt="Modules Icon">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}">
+                    <a class="nav-link">Modules</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div id="QuizNav" class="nav-item-container">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Quiz Icon">
+                    <a class="nav-link" href="{{ url_for('student.displayQuiz') }}">Quiz</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div id="LogoutNav" class="nav-item-container">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Logout Icon">
+                    <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+
+<hr class="hrline">
+    <div class="scrollable-cards-container">
+        <ul class="list-unstyled" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;;">
+            {% for question in questions %}
+            <li class="question-item mb-3">
+                <strong class="question-text" style="display: block; text-align: center;">
+                    <div style="align-items: center;">
+                    {{ loop.index }}. {{ question.question_text }}
+                </strong>
+                <div class="question-card">
+                    <div class="card-body">
+                        <span class="answer-text">
+                            {{ question.answer_text if question.answer_text else 'Not answered yet' }}
+                        </span>
+                    </div>
+                    <button class="action-button copy button" data-question-text="{{ question.answer_text }}">copy code</button> <!-- Button with data attribute -->
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+      
+    </div>
+    {% if next_labsheet %}
+    
+        {% if next_labsheet.module_id > current_user.current_module or labsheet.module_id > current_week  %}
+    
+        <form action="{{ url_for('student.update_and_redirect') }}" method="POST">
+            {{ form.hidden_tag() }}  <!-- This includes the CSRF token -->
+            <input type="hidden" name="next_lab_module_id" value="{{ next_labsheet.module_id }} ">
+            <input type="hidden" name="lab_module_id" value="{{ labsheet.module_id }} ">
+            <button type="submit" class="nextlab">
+                Completed
+            </button>
+        </form>
+        
+
+        {% elif labsheet.module_id <= current_user.current_module or labsheet.module_id <= current_week %}
+        <a href="{{ url_for('student.labsheet', labsheet_id=next_labsheet.id) }}" class="nextlab">go to  {{next_labsheet.title}}</a>
+       
+
+        {% else %}
+        <a href="{{ url_for('student.labsheet') }}" class="nextlab">Back to modules</a>
+
+     
+        </a>
+
+        {% endif %}
+
+
+    
+    
+    {% else %}
+    <a href="{{ url_for('student.modules') }}" class="nextlab">
+    Back to modules
+    </a>
+    
+    
+    
+    {% endif %}
+    
+    
+    
+   
+
+    <script type="text/javascript" src="{{ url_for('static', filename='labsheet.js') }}"></script>
+
+
+<style>
+    #AmodulesNav{
+        background-color: var(--color-snackbar-bg); 
+        border-radius: 10px;
+    }
+</style>
+
+    {% endblock %}

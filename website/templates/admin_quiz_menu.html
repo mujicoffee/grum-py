@@ -1,0 +1,42 @@
+{% extends "StaffAdminbase.html" %}
+
+{% block title %}Quizzes{% endblock %}
+{% block pageTitle %}
+
+
+All quizzes
+
+
+{% endblock %}
+
+
+{% block content %}
+    <div class="roomDetailsCont">
+
+        
+
+        {% for module_id, quizzes in quizzes_by_module.items() %}
+        {% for quiz in quizzes %}
+        <a href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz.id) }}" style="text-decoration: none;">
+        <div class="classroomcard">
+            <div class="classroomcardContent">
+              
+                <h5 >Module {{ module_id }}:<span style="color:#E8E832"> {{quiz.title}}</span></h5> 
+                <ul class="list-group list-group-flush">
+                 
+                 
+                
+                </ul>
+              </div>
+                    
+            
+               
+            </div>
+        </a>
+            {% endfor %}
+        {% endfor %}
+
+
+       
+
+{% endblock %}

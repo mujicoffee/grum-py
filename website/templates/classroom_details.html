@@ -1,0 +1,233 @@
+{% extends "StaffAdminbase.html" %}
+
+{% block title %}{{ classroom.code }} Details{% endblock %}
+{% block goback %}
+<a href="{{ url_for('staff.classroom') }}" style="display: flex; align-items: center; width: fit-content; text-decoration: none;">
+ 
+    <p style="color: #E8E832; margin: 0; margin-left: 0.7vw; font-size: 2vmin;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;"> &larr; &nbsp;Back to classroom</p>
+</a>
+{% endblock %}
+
+{% block pageTitle %}{{ classroom.code }}{% endblock %}
+
+{% block content %}
+<div class="roomDetailsCont">
+    
+    
+    <!-- Table for Staff -->
+    <h3 style="color: #e7e783; font-weight:bolder">Lecturers </h3>
+    <div class="table-container">
+    <table class="staffTable">
+        <thead>
+            <tr>         
+                <th>No.</th>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if classroom.staff %}
+                {% for staff in classroom.staff %}
+                <tr>
+                    <td>{{loop.index}}</td>
+                    <td>{{ staff.name }}</td>
+                    <td>{{ staff.email }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="3" class="text-center" style="color: rgb(182, 42, 42); font-weight: bold;">No lecturers assigned</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+    <hr>
+
+    <form style="margin-bottom: 2vh;" class="d-flex" action="{{ url_for('staff.search_students', code=classroom.code) }}" method="GET">
+        <input class="form-control me-2 " style="width:40vw;" type="search" placeholder="Search Students" name="query" aria-label="Search" value="{{ request.args.get('query', '') }}">
+        <button style="color:white; margin-right:0.5vw;" class="btn btn-outline-success {{ 'active' if request.args.get('query') }}" type="submit">Search</button>
+        {% if request.args.get('query') %}
+            <a href="{{ url_for('staff.search_students', code=classroom.code) }}" class="btn" style="background-color: rgb(182, 42, 42); color:white;">Cancel</a>
+        {% endif %}
+    </form>
+
+    <ul class="custom-nav-pills mb-3" id="pills-tab" role="tablist">
+        <li class="custom-nav-item" role="presentation">
+            <button class="custom-nav-link active" id="pills-modules-tab" data-bs-toggle="pill" data-bs-target="#pills-modules" type="button" role="tab" aria-controls="pills-modules" aria-selected="true">Modules</button>
+        </li>
+        <li class="custom-nav-item" role="presentation">
+            <button class="custom-nav-link" id="pills-quizzes-tab" data-bs-toggle="pill" data-bs-target="#pills-quizzes" type="button" role="tab" aria-controls="pills-quizzes" aria-selected="false">Quizzes</button>
+          
+        </li>
+      
+    </ul>
+    
+
+    <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-modules" role="tabpanel" aria-labelledby="pills-modules-tab">
+            <!-- Table for Students - Modules -->
+            <h3 style="color: #e7e783; font-weight:bolder ;  ">
+                Students ({{ student_count }})
+                <!-- Add Students Link -->
+                <a href="{{ url_for('staff.add_students', code=classroom.code) }}" class="addbutton" >+ Add a new student</a>
+            </h3>
+            <div class="table-container">
+            <table class="staffTable" >
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Name</th>
+                        <th>Week 1</th>
+                        <th>Week 2</th>
+                        <th>Week 3</th>
+                        <th>Week 4</th>
+                        <th>Week 5</th>
+                        <th>Week 6</th>
+                        <th>Week 7</th>
+                        <th>Week 8</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if students_data %}
+                        {% for student_data in students_data %}
+                        <tr>
+                            <td>{{loop.index}}</td>
+                            <td>{{ student_data.student.name }}</td>
+                            {% for week in range(1, 9) %}
+                            <td>
+                                {% if week in student_data.completed_modules %}
+                                <div class="rounded-square bg-success"></div>
+
+                                {% else %}
+                                <div class="rounded-square bg-white"></div>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                            <td>
+                                <!-- Remove button to trigger the modal -->
+                                <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ student_data.student.id }}">Remove</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="11" class="text-center" style="color: rgb(182, 42, 42); font-weight: bold;">No students registered</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        </div>
+        <div class="tab-pane fade" id="pills-quizzes" role="tabpanel" aria-labelledby="pills-quizzes-tab">
+            <!-- Table for Students - Quizzes -->
+            <h3 style="color: #e7e783; font-weight:bolder ;  ">
+                Students ({{ student_count }})
+                <!-- Add Students Link -->
+                <a href="{{ url_for('staff.add_students', code=classroom.code) }}" class="addbutton" >+ Add a new student</a>
+            </h3>
+            <div class="table-container">
+            <table class="staffTable">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Name</th>
+                        <th>Week 1</th>
+                        <th>Week 2</th>
+                        <th>Week 3</th>
+                        <th>Week 4</th>
+                        <th>Week 5</th>
+                        <th>Week 6</th>
+                        <th>Week 7</th>
+                        <th>Week 8</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if students_data %}
+                        {% for student_data in students_data %}
+                        <tr>
+                            <td>{{loop.index}}</td>
+                            <td>{{ student_data.student.name }}</td>
+                            {% for week in range(1, 9) %}
+                            <td>
+                                {% if week in student_data.completed_quizzes %}
+                                <div class="rounded-square bg-success"></div>
+                                {% else %}
+                                <div class="rounded-square bg-white"></div>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                            <td>
+                                <!-- Remove button to trigger the modal -->
+                                <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ student_data.student.id }}">Remove</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="11" class="text-center" style="color: rgb(182, 42, 42); font-weight: bold;">No students registered</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for confirming deletion -->
+{% for student_data in students_data %}
+<div class="modal fade" id="deleteModal{{ student_data.student.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ student_data.student.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel{{ student_data.student.id }}">Remove Student</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger">Are you sure you want to remove this student?</p>
+                <p>Name: <strong>{{ student_data.student.name }}</strong></p>
+                <p>Email: <strong>{{ student_data.student.email }}</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="POST" action="{{ url_for('staff.remove_student', student_id=student_data.student.id, code=classroom.code) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger">Confirm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Custom CSS for rounded-square -->
+<style>
+    .rounded-square {
+        width: 20px;
+        height: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin: auto;
+    }
+    .bg-success {
+        background-color: green;
+    }
+    .bg-white {
+        background-color: white;
+    }
+
+    #SclassroomNav{
+        background-color: var(--color-snackbar-bg); 
+        border-radius: 10px;
+    }
+
+
+</style>
+
+    
+
+
+{% endblock %}

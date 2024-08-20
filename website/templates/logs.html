@@ -1,0 +1,60 @@
+{% extends "StaffAdminbase.html" %}
+
+{% block title %}
+Logs
+{% endblock %}
+{% block pageTitle %}User activity logs{{ module_id }}{% endblock %}
+{% block content %}
+<div class="roomDetailsCont">
+
+    <div class="table-container" style="max-height: 55vh; ">
+        <table class="staffTable">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Class</th>
+                    <th>Status</th>
+                    <th>Activity Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if logs %}
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.timestamp.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                        <td>{{ log.user.name }}</td>
+                        <td>{{ log.user_role }}</td>
+                        <td>{{ log.classroom_code }}</td>
+                        <td>
+                            <span class="badge {% if log.status == 'pass' %}bg-success{% else %}bg-danger{% endif %}">
+                                {{ log.status }}
+                            </span>
+                        </td>
+                        <td>{{ log.activity_type }}</td>
+                        <td>{{ log.description }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center" style="color: red; font-weight: bold;">
+                            No logs recorded
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<style>
+    #AlogNav {
+        background-color: var(--color-snackbar-bg); 
+        border-radius: 10px;
+    }
+
+  
+</style>
+{% endblock %}

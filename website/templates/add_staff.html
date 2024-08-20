@@ -1,0 +1,122 @@
+{% extends "StaffAdminbase.html" %}
+
+{% block title %}Add Staff{% endblock %}
+{% block goback %}
+<a href="{{ url_for('admin.teaching_team') }}" style="display: flex; align-items: center; width: fit-content; text-decoration: none;">
+   
+    <p style="color: #E8E832; margin: 0; margin-left: 0.7vw; font-size: 2vmin;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">&larr; &nbsp; Back to teaching team</p>
+</a>
+{% endblock %}
+{% block pageTitle %}Add staff to the team {% endblock %}
+{% block content %}
+<div class="roomDetailsCont">
+ 
+    <ul class="custom-nav-pills mb-3" id="pills-tab" role="tablist">
+        <li class="custom-nav-item" role="presentation">
+            <button class="custom-nav-link active" id="pills-modules-tab" data-bs-toggle="pill" data-bs-target="#pills-multiple" type="button" role="tab" aria-controls="pills-multiple" aria-selected="true">Multiple</button>
+        </li>
+        <li class="custom-nav-item" role="presentation">
+            <button class="custom-nav-link" id="pills-quizzes-tab" data-bs-toggle="pill" data-bs-target="#pills-individual" type="button" role="tab" aria-controls="pills-idnividual" aria-selected="false">Individual</button>
+          
+        </li>
+      
+    </ul>
+    <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-multiple" role="tabpanel" aria-labelledby="pills-multiple-tab">
+
+              <!-- Display existing file if available -->
+            <div class="mb-3">
+                <p style="color: white; font-size: 1.5em;"><strong>Download the Staff Template:</strong></p>
+                <a href="{{ url_for('static', filename='uploads/staff_template.xlsx') }}" class="btn btn-secondary" download="">Download Staff Template</a>
+            </div>
+
+            <form method="post" action="{{ url_for('admin.add_staff') }}" enctype="multipart/form-data">
+                {{ form_staff_file.hidden_tag() }}
+                <div class="form-group" style="padding-right: 10px;">
+                    {{ form_staff_file.staff_file.label }}
+                    <!-- 'accept' attribute to restrict file types -->
+                    {{ form_staff_file.staff_file(class="form-control", accept=".xlsx") }}
+                </div>
+                <br>
+                {{ form_staff_file.submit(class="addbutton", value="Add Staff") }}
+            </form>
+        </div>
+        <div class="tab-pane fade" id="pills-individual" role="tabpanel" aria-labelledby="pills-individual-tab">
+            <form method="post" action="{{ url_for('admin.add_staff') }}" enctype="multipart/form-data" style="padding-right: 10px;">
+                {{ form_staff.hidden_tag() }}
+                <div class="form-group">
+                    {{ form_staff.staff_name.label }}
+                    {{ form_staff.staff_name(class="form-control", placeholder="Enter staff name") }}
+                </div>
+                <br>
+                <div class="form-group">
+                    {{ form_staff.staff_email.label }}
+                    {{ form_staff.staff_email(class="form-control", placeholder="Enter staff email") }}
+                </div>
+                <br>
+                <div class="form-group">
+                    <label>Assign to Class
+                        <!-- Select All Link -->
+                        <a href="#" class="text-decoration-none selectAll" style="font-size: small; margin-left: 10px; color: #E8E832;">Select All</a>
+                    </label><br>
+                    <label style="color: rgba(255, 255, 255, 0.692); font-size: 0.9rem;">Keep this unchecked if you plan to assign classes later</label><br><br>
+                    {{ form_staff.p01() }} P01<br>
+                    {{ form_staff.p02() }} P02<br>
+                    {{ form_staff.p03() }} P03<br>
+                    {{ form_staff.p04() }} P04<br>
+                    {{ form_staff.p05() }} P05<br>
+                    {{ form_staff.p06() }} P06<br>
+                    {{ form_staff.p07() }} P07<br>
+                    {{ form_staff.p08() }} P08<br>
+                </div>
+                <br>
+                {{ form_staff.submit(class="addbutton", value="Add Staff") }}
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+
+    label{
+        font-size: 2em;
+        color: #e7e783;
+        margin-top: 1vh;
+    }
+    .form-group {
+        color: white;
+        font-size: 1.5em;
+    }
+    
+
+    #AteamNav{
+        background-color: var(--color-snackbar-bg); 
+        border-radius: 10px;
+    }
+
+</style>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.selectAll').forEach(function(link) {
+            let allSelected = false; // Flag to track the state
+
+            link.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent the default action of the link
+                // Get the parent form to find all checkboxes within it
+                const form = this.closest('form');
+                if (form) {
+                    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                    allSelected = !allSelected; // Toggle the state
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = allSelected; // Select or unselect all checkboxes within the form
+                    });
+                    // Update link text based on the state
+                    this.textContent = allSelected ? 'Unselect All' : 'Select All';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

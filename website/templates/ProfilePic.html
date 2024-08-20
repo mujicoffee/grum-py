@@ -1,0 +1,33 @@
+{% extends "setupAccount.html" %}
+{% block title %}Setup your Profile Picture{% endblock %}
+
+{% block mainContent %}
+<div class="SetupContainer">
+    <div class="SetupCard">
+        <div class="setup-card-content">
+            <p class="titleSetup">-- Setup your account --</p>
+            <p class="steps">Step 1 of 2</p>
+            <p class="stepdesc">Choose your profile picture</p>
+            <form method="POST" action="{{ url_for('auth.setupProfilePic') }}">
+                {{ form.hidden_tag() }}
+                {{ form.profilePic(value=selected_pic, id='profilePicInput') }}
+
+                <div class="setupContent">
+                    {% for img in profile_pics %}
+                    <label class="profile-pic {% if img == selected_pic %}selected{% endif %}" onclick="chooseImage('{{ img }}')" style="width: 40px;height:40px;">
+                        <img src="{{ url_for('static', filename='images/pfp/' ~ img) }}" alt="Profile" class="pic" style="width: 20px;height:auto;">
+                    </label>
+                    {% endfor %}
+
+                    <!-- Locked profile pictures -->
+                   
+                </div>
+
+                <div class="button-wrapper">
+                    <button type="submit" id="verifyButton">Next</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

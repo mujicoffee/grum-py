@@ -1,0 +1,60 @@
+<!-- Extend the base template -->
+{% extends "base.html" %}
+
+<!-- Set page title -->
+{% block title %}Sign Up{% endblock %}
+
+<!-- Set page content -->
+{% block content %}
+
+<!-- Form container with top margin -->
+<div class="container mt-3">
+
+  <!-- Submits the form via POST request to the sign up route -->
+  <form method="POST" action="{{ url_for('auth.sign_up') }}" enctype="multipart/form-data">
+
+    <!-- Hidden tag to prevent CSRF attacks -->
+    {{ form.hidden_tag() }}
+
+    <!-- Display form heading -->
+    <h3 class="text-center mb-4">Sign Up</h3>
+
+    <!-- Label and input field for Email Address -->
+    <div class="mb-3">
+      <label for="email" class="form-label">Email Address</label>
+      {{ form.email(class="form-control", id="email", placeholder="Enter email") }}
+    </div>
+
+    <!-- Label and input field for Name -->
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      {{ form.name(class="form-control", id="name", placeholder="Enter name") }}
+    </div>
+
+    <!-- Label and input field for Password -->
+    <div class="mb-3">
+      <label for="passwordSet" class="form-label">Password</label>
+      {{ form.passwordSet(class="form-control", id="passwordSet", placeholder="Enter password") }}
+    </div>
+
+    <!-- Label and input field for Confirm Password -->
+    <div class="mb-3">
+      <label for="passwordConfirm" class="form-label">Confirm Password</label>
+      {{ form.passwordConfirm(class="form-control", id="passwordConfirm", placeholder="Retype password") }}
+    </div>
+
+    <div class="mb-3">
+      <label for="role" class="form-label">Role</label>
+      {{ form.role(class="form-select", id="role") }}
+    </div>
+
+    <div class="mb-3">
+      <label for="image_file" class="form-label">Profile Picture</label>
+      {{ form.image_file(class="form-control", id="image_file") }}
+    </div>
+
+    <!-- Submit button for the form -->
+    <button type="submit" class="btn btn-primary">Sign Up</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzes</title>
+    <link rel="icon" href="/static/images/logo/grumPY.png" type="image/png">
+    <!-- Bootstrap CSS library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Link to custom CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+    <div id="snackbar">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+           
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+        
+          {% endif %}
+        {% endwith %}
+    </div>
+
+    
+<img src="{{ url_for('static', filename='images/bg/quizzesBG.png') }}" id="quizBG">
+
+<nav class="navbar">
+    <div class="navbarContent">
+        <div class="LogoAndText">
+            <img class="navbarLogo" src="{{ url_for('static', filename='images/logo/grumPY.png') }}" alt="Logo">
+            <img class="navbarText" src="{{ url_for('static', filename='images/logo/grumPYText.png') }}" alt="Text">
+        </div>
+        <ul class="navbarList">
+            <li class="nav-item">
+                <div id="dashboardNav" class="nav-item-container">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                    <a class="nav-link" href="{{ url_for('student.dashboard') }}">Dashboard</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div id="rankingNav" class="nav-item-container">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Ranking Icon">
+                    <a class="nav-link" href="{{ url_for('student.rankings') }}">Ranking</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div id="modulesNav" class="nav-item-container">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Modules Icon">
+                    <a class="nav-link" href="{{ url_for('student.modules') }}">Modules</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div id="QuizNav" class="nav-item-container" style="background-color: var(--color-snackbar-bg); border-radius: 10px;">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Quiz Icon">
+                    <a class="nav-link" href="{{ url_for('student.displayQuiz') }}">Quiz</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div id="LogoutNav" class="nav-item-container">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Logout Icon">
+                    <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div style="margin-left:18vw">
+    <h1 class="QUIZtitle">Quizzes</h1>
+    <div class="quiz-list">
+    
+        {% for module in modules %}
+
+        {% if module.id <= current_user.current_quiz and module.id <= current_week %}
+        <a style="text-decoration:none" href="{{ url_for('student.quiz', quiz_id=module.id) }}" >
+        <div class="quiz-item {% if module.id|string in completed_quizzes %}completed{% else %}not-completed{% endif %}">
+            <div class="quiz-title"><p style="display: inline; color: white;">{{ module.id }}. &nbsp;</p> <span style="color: #6EB6FF;">{{ module.title }}</span>
+            </div>
+            <div class="quiz-status">
+                {% if module.id|string in completed_quizzes %}
+                   <p style="color:#10CF43; margin:0">Completed</p> 
+                {% elif current_user.current_quiz == module.id %}
+                    <p style="color:#E8E832; margin:0">Ongoing</p>
+                {% else %}
+                    <p style="color:#F24D38; margin:0">Not Completed</p>
+                {% endif %}
+            </div>
+
+        </div>
+        </a>
+
+        {% else %}
+        <div class="quiz-item {% if module.id|string in completed_quizzes %}completed{% else %}not-completed{% endif %}">
+            <div class="quiz-title"><p style="display: inline; color: white;">{{ module.id }}. &nbsp;</p> <span style="color: #6EB6FF;">{{ module.title }}</span>
+            </div>
+            <div class="quiz-status">
+                {% if module.id|string in completed_quizzes %}
+                    Completed
+                {% else %}
+                    Not Completed
+                {% endif %}
+            </div>
+            <div class="quiz-item-overlay">
+                <img src="{{ url_for('static', filename='images/extras/lock.png') }}" alt="Locked" style="height: 80%; width:auto;">
+            </div>
+        </div>
+
+      {% endif %}
+
+        {% endfor %}
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
+
+</body>
+</html>

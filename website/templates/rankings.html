@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking</title>
+    <link rel="icon" href="/static/images/logo/grumPY.png" type="image/png">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div id="snackbar">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {{ message }}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <video autoplay muted loop id="rankingBG">
+        <source src="{{ url_for('static', filename='images/bg/otp.mp4') }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <nav class="navbar">
+        <div class="navbarContent">
+            <div class="LogoAndText">
+                <img class="navbarLogo" src="{{ url_for('static', filename='images/logo/grumPY.png') }}" alt="Logo">
+                <img class="navbarText" src="{{ url_for('static', filename='images/logo/grumPYText.png') }}" alt="Text">
+            </div>
+            <ul class="navbarList">
+                <li class="nav-item">
+                    <div id="dashboardNav" class="nav-item-container">
+                        <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                        <a class="nav-link" href="{{ url_for('student.dashboard') }}">Dashboard</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div id="rankingNav" class="nav-item-container" style="background-color: var(--color-snackbar-bg); border-radius: 10px;">
+                        <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Ranking Icon">
+                        <a class="nav-link" href="{{ url_for('student.rankings') }}">Ranking</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div id="modulesNav" class="nav-item-container">
+                        <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Modules Icon">
+                        <a class="nav-link" href="{{ url_for('student.modules') }}">Modules</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div id="QuizNav" class="nav-item-container">
+                        <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Quiz Icon">
+                        <a class="nav-link" href="{{ url_for('student.displayQuiz') }}">Quiz</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div id="LogoutNav" class="nav-item-container">
+                        <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Logout Icon">
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="RankContainer">
+        <!-- Form should appear first -->
+        <form method="get" action="{{ url_for('student.rankings') }}">
+            <select id="ranking_week" name="ranking_week" class="custom-select" onchange="this.form.submit()">
+                {% for week in range(1, 9) %}
+                <option value="{{ week }}" {% if week == selected_ranking_week %}selected{% endif %}>Ranking for week {{ week }}</option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <!-- Content appears below the form -->
+        {% if rankings %}
+        <div class="rankingContent">
+            <div class="rankingtable-container">
+                <table class="rankingtable">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th style="text-align: left;">Name</th>
+                            <th>Score</th>
+                            <th>Total Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rank in rankings %}
+                        <tr>
+                           
+
+                            {% if current_user.id == rank.userid %}
+                            <td style="color:var(--color-welcome-text); background-color:#4c6444a4">{{ loop.index }}</td> <!-- Show rank index -->
+                            <td class="rank-name"style="background-color:#4c6444a4" >
+                                <div class="profile-pic">
+                                    <img src="{{ url_for('static', filename='images/pfp/' + rank.pfp) }}" alt="Profile Picture">
+                                </div>
+                                <span class="name-text" style="color:var(--color-welcome-text);">(You)</span>
+                            </td>
+
+                            <td style="color:var(--color-welcome-text);background-color:#4c6444a4">{{ rank.score }}</td>
+                            <td style="color:var(--color-welcome-text);background-color:#4c6444a4">{{ rank.cumulative_score }}</td>
+
+                            {% else %}
+                            <td>{{ loop.index }}</td> <!-- Show rank index -->
+                            <td class="rank-name">
+                                <div class="profile-pic">
+                                    <img src="{{ url_for('static', filename='images/pfp/' + rank.pfp) }}" alt="Profile Picture">
+                                </div>
+                                <span class="name-text">{{ rank.name }}</span>
+                            </td>
+                            <td>{{ rank.score }}</td>
+                            <td>{{ rank.cumulative_score }}</td>
+                            {% endif %}
+
+                    
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table> 
+            </div>
+        </div>
+        {% else %}
+        <div class="norankingContent">
+            <div class="alert alert-info" style="font-size:15px;" role="alert">
+                No rankings available for this week.
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='rankings.js') }}"></script>
+</body>
+</html>

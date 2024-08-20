@@ -1,0 +1,97 @@
+{% extends "baseModuleLabsheet.html" %}
+
+{% block title %}Modules{% endblock %}
+{% block classBG %}modulesBG{% endblock %}
+{% block headerClass %}moduleHeader{% endblock %}
+{% block heading %}Modules{% endblock %}
+{% block maincontainer %}modulecontainer{% endblock %}
+{% block content %}
+
+<nav class="navbar">
+    <div class="navbarContent">
+        <div class="LogoAndText">
+            <img class="navbarLogo" src="{{ url_for('static', filename='images/logo/grumPY.png') }}" alt="Logo">
+            <img class="navbarText" src="{{ url_for('static', filename='images/logo/grumPYText.png') }}" alt="Text">
+        </div>
+        <ul class="navbarList">
+            <li class="nav-item">
+                <div id="dashboardNav" class="nav-item-container" >
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                    <a class="nav-link" href="{{ url_for('student.dashboard') }}">Dashboard</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div id="rankingNav" class="nav-item-container">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Ranking Icon">
+                    <a class="nav-link" href="{{ url_for('student.rankings') }}">Ranking</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div id="modulesNav" class="nav-item-container" style="background-color: var(--color-snackbar-bg); border-radius: 10px;" alt="Modules Icon">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}">
+                    <a class="nav-link" href="{{ url_for('student.modules') }}">Modules</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div id="QuizNav" class="nav-item-container">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Quiz Icon">
+                    <a class="nav-link" href="{{ url_for('student.displayQuiz') }}">Quiz</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div id="LogoutNav" class="nav-item-container">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Logout Icon">
+                    <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+<div class="accordion" id="accordionModules">
+    {% for module in modules_data %}
+        {% if module.module.id <= current_user.current_module and module.module.id <= current_week %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading{{ module.module.id }}">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ module.module.id }}" aria-expanded="true" aria-controls="collapse{{ module.module.id }}">
+                        <p>
+                          <span class="module-week-number"> Week {{ module.module.week_number }}: </span>
+                            <span class="module-title">{{ module.module.title }}</span>
+                        </p>
+                    </button>
+                </h2>
+                <div id="collapse{{ module.module.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ module.module.id }}" data-bs-parent="#accordionModules">
+                    <div class="accordion-body">
+                        <p><strong>{{ module.module.description }}</strong></p>
+                        <div class="list-group">
+                            {% for labsheet in module.labsheets %}
+                                <a href="{{ url_for('student.labsheet', labsheet_id=labsheet.id) }}" class="list-group-item list-group-item-action lab-sheet">
+                                    {{ labsheet.title }} {{ labsheet.description }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="accordion-item accordion-item-locked">
+                <h2 class="accordion-header" id="heading{{ module.module.id }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ module.module.id }}" aria-expanded="false" aria-controls="collapse{{ module.module.id }}" disabled>
+                        Week {{ module.module.week_number }}: {{ module.module.title }}
+                    </button>
+                </h2>
+                <div id="collapse{{ module.module.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ module.module.id }}" data-bs-parent="#accordionModules">
+                    <!-- Optional content can be added here -->
+                </div>
+                <div class="accordionoverlay">
+                    <img src="{{ url_for('static', filename='images/extras/lock.png') }}" alt="Locked" style="height: 80%; width:auto;">
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <p>No modules available.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

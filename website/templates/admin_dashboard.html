@@ -1,0 +1,385 @@
+{% extends "StaffAdminbase.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+
+{% block pageTitle %}Overview{% endblock %}
+{% block content %}
+<div class="roomDetailsCont">
+
+<!-- Set Start Date Section -->
+<div class="start-date-section">
+    <h4 class="section-title">Set Start Date</h4>
+    <form method="POST" action="{{ url_for('admin.dashboard') }}" class="start-date-form">
+        {{ form.hidden_tag() }}  <!-- This includes the CSRF token -->
+        <label for="start_date" class="form-label">Start Date:</label>
+        {{ form.start_date(class="form-control") }}  <!-- Render the date field with Bootstrap styling -->
+        <button type="submit" class="addbutton" style="margin: 0;">Save</button>
+    </form>
+    <p class="current-date">Current Start Date: {{ current_start_date.strftime('%A, %d %B %Y') if current_start_date else 'Not Set' }}</p>
+</div>
+
+
+
+<!-- Status Section as Table -->
+
+
+
+
+<div style="display: flex;">
+    <h4 style="color: #e7e783; font-weight: bolder;">Activated users</h3>
+
+    <div style="margin-left: auto;">
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeactivateStudents" style="font-size: small;">
+            Deactivate All Students
+        </button>
+  
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeactivateAll" style="font-size: small;">
+            Deactivate All
+        </button>
+    </div>
+</div>
+
+
+<!-- Users Table -->
+  
+<div class="table-container">
+<table  class="staffTable" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Role</th>
+            <th>Email</th>
+            <th>Last Login</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users_active %}
+            <tr style="justify-content:center;  ">
+                <td>{{ user.name }}</td>
+                <td>{{ user.role }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.last_login_time.strftime('%A %d %B %H:%M:%S') }}</td>
+                <td>
+                 
+              
+    
+                    {% if user.role != 'admin' %}
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeactivateAccount" data-email="{{ user.email }}" data-name="{{ user.name }}" style="font-size:small;">Deactivate Account</button>
+                    {% endif %}
+           
+                 </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5" style="color: rgb(182, 42, 42);">No Users currently logged on.</td>
+            </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
+</div>
+
+<br>
+
+
+<div style="display: flex;">
+    <h4 style="color: #e7e783; font-weight: bolder;">Deactivated users</h3>
+
+    <div style="margin-left: auto;">
+        <button type="button" class="btn " data-bs-toggle="modal" data-bs-target="#confirmActivateStaff" style="font-size:small;color:white; background-color: #77aa66;">Activate All Staff</button>
+  
+        <button type="button" class="btn " data-bs-toggle="modal" data-bs-target="#confirmActivateAll" style="font-size:small;color:white; background-color: #77aa66;">Activate All</button>
+    </div>
+</div>
+
+ 
+<div class="table-container">
+<table class="staffTable" style="width: 100%;">
+    <thead>
+        <tr >
+            <th>User</th>
+            <th>Role</th>
+            <th>Email</th>
+            <th>Last Login</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users_inactive %}
+            <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ user.role }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.last_login_time.strftime('%A %d %B %H:%M:%S') }}</td>
+                <td>
+                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#confirmActivateUser" data-email="{{ user.email }}" data-name="{{ user.name }}" style="background-color: #77aa66; font-size:small;color:white;">Activate Account</button>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center; color: red;">No Users currently Deactivated.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div>
+<!-- Confirmation Modal for Deactivate All Students -->
+<div class="modal fade" id="confirmDeactivateStudents" tabindex="-1" aria-labelledby="confirmDeactivateStudentsLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmDeactivateStudentsLabel">Deactivate All Students</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to deactivate all students?
+        </div>
+        <div class="modal-footer">
+          <form action="{{ url_for('admin.deactivate_students') }}" method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-danger">Deactivate All Students</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal for Deactivate All -->
+<div class="modal fade" id="confirmDeactivateAll" tabindex="-1" aria-labelledby="confirmDeactivateAllLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmDeactivateAllLabel">Deactivate All Users</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to deactivate all users?
+        </div>
+        <div class="modal-footer">
+          <form action="{{ url_for('admin.deactivate_all') }}" method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-danger">Deactivate All Users</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Confirmation Modal for Clear Session -->
+
+
+<!-- Confirmation Modal for Deactivate Account -->
+<div class="modal fade" id="confirmDeactivateAccount" tabindex="-1" aria-labelledby="confirmDeactivateAccountLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeactivateAccountLabel">Deactivate Account for <span id="deactivate-account-user-name"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to deactivate account for <br>User: <span id="deactivateaccount-user-name-body"></span> <br>Email: <span id="deactivate-account-user-email"></span>
+            </div>
+            <div class="modal-footer">
+                <form action="{{ url_for('admin.make_inactive', email=user.email) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Deactivate Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal for Activate All Staff Account -->
+<div class="modal fade" id="confirmActivateStaff" tabindex="-1" aria-labelledby="confirmActivateStaffLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmActivateStaffLabel">Activate Staff Accounts</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to activate all Staff users?
+            </div>
+            <div class="modal-footer">
+                <form action="{{ url_for('admin.activate_staff') }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn" style="color:white; background-color: #77aa66;">Activate Staff</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal for Activate All Account -->
+<div class="modal fade" id="confirmActivateAll" tabindex="-1" aria-labelledby="confirmActivateAllLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmActivateAllLabel">Activate All Accounts</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to Activate all Accounts
+            </div>
+            <div class="modal-footer">
+                <form action="{{ url_for('admin.activate_all') }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn " style="color:white; background-color: #77aa66;">Activate All</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal for Activate Account -->
+<div class="modal fade" id="confirmActivateUser" tabindex="-1" aria-labelledby="confirmActivateUserLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmActivateUserLabel">Activate Account for <span id="activate-account-user-name"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to activate account for <br>User: <span id="activate-account-user-name-body"></span> <br>Email: <span id="activate-account-user-email"></span>
+            </div>
+            <div class="modal-footer">
+                <form action="{{ url_for('admin.make_active', email=user.email) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Activate User</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<style>
+    .profile-container {
+        display: flex;
+        align-items: center;
+    }
+    .profile-picture {
+        margin-right: 20px;
+    }
+    .profile-picture img {
+        border-radius: 50%;
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+    }
+    .horizontal-bar{
+        width: 100%;
+        height: 1px; /* Height of the bar */
+        background-color: #333; /* Background color of the bar */
+        margin: 20px 0; /* Margin to separate it from other elements */
+    }
+
+
+    #AdashboardNav{
+        background-color: var(--color-snackbar-bg); 
+        border-radius: 10px;
+    }
+
+    .start-date-section {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+        background-color: #2c3e50; /* Dark background for better contrast */
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+    }
+
+    .section-title {
+        color: #e7e783;
+        font-weight: bolder;
+        margin-bottom: 15px;
+    }
+
+    .start-date-form {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Space between elements */
+    }
+
+    .form-label {
+        color: #ecf0f1; /* Lighter text color */
+        font-size: 16px;
+    }
+
+    .form-control {
+        width: auto;
+        border-radius: 4px;
+        border: 1px solid #bdc3c7;
+    }
+
+    .btn-primary {
+        background-color: #3498db; /* Blue button */
+        border-color: #3498db;
+        border-radius: 4px;
+        padding: 8px 12px;
+    }
+
+    .btn-primary:hover {
+        background-color: #2980b9;
+        border-color: #2980b9;
+    }
+
+    .current-date {
+        color: #e8e832; /* Lighter text color */
+        margin-top: 10px;
+        font-size: 16px;
+    }
+
+</style>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $('#confirmDeactivateAccount').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var userName = button.data('name'); // Extract info from data-* attributes
+        var userEmail = button.data('email');
+        
+        var modal = $(this);
+        modal.find('#deactivate-account-user-name').text(userName);
+        modal.find('#deactivate-account-user-name-body').text(userName);
+        modal.find('#deactivate-account-user-email').text(userEmail);
+        
+        modal.find('form').attr('action', "{{ url_for('admin.make_inactive', email='') }}" + userEmail);
+    });
+
+    // Similar script for the activate user modal
+    $('#confirmActivateUser').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var userName = button.data('name');
+        var userEmail = button.data('email');
+        
+        var modal = $(this);
+        modal.find('#activate-account-user-name').text(userName);
+        modal.find('#activate-account-user-name-body').text(userName);
+        modal.find('#activate-account-user-email').text(userEmail);
+        
+        modal.find('form').attr('action', "{{ url_for('admin.make_active', email='') }}" + userEmail);
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var startDateInput = document.querySelector('input[name="start_date"]');
+        var today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+        
+        startDateInput.setAttribute('min', today); // Set the minimum date to today
+    });
+
+</script>
+{% endblock %}

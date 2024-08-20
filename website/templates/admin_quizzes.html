@@ -1,0 +1,43 @@
+{% extends "StaffAdminbase.html" %}
+
+{% block title %}Quizzes{% endblock %}
+
+{% block pageTitle %}Quizzes{% endblock %}
+
+{% block content %}
+<div class="roomDetailsCont">
+   
+        <!-- Offset to make space for the navbar -->
+      
+       
+
+            <!-- Button to Add a New Module -->
+           
+
+            {% for module_id, quizzes in quizzes_by_module.items() %}
+
+            <a style="text-decoration: none; " href="{{ url_for('admin.quizzes_by_module', module_id=module_id) }}">
+                <div class="classroomcard">
+               
+                <div class="classroomcardContent">
+                    <h4  style="color:#E8E832;">{{module_id}}. &nbsp;  {{ quizzes[0].title }}</h4> 
+                    
+                  </div>
+                          
+                </div>
+                </a>
+
+               
+            {% endfor %}
+          
+
+</div>
+<style>
+  #AquizzesNav{
+    background-color: var(--color-snackbar-bg); 
+    border-radius: 10px;
+}
+</style>
+{% endblock %}
+
+

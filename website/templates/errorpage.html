@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Too Many Requests</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(#7a0000, #300000); /* Red gradient background */
+            color: #fff; /* White text color */
+        }
+        .container {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        h1, p {
+            margin: 10px 0;
+        }
+        a {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 10px 20px;
+            background: #666; /* Gray button background */
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 0 #333; /* Slight shadow to give button depth */
+            transition: background 0.3s;
+        }
+        a:hover {
+            background: #888; /* Lighten on hover */
+        }
+        a:active {
+            background: #555; /* Darken on click */
+            box-shadow: 0 1px 0 #222; /* Reduce shadow on click */
+            transform: translateY(1px); /* Slightly push down on click */
+        }
+        .disabled-link {
+            pointer-events: none;
+            color: #999; /* Light gray color for disabled state */
+            background: #444; /* Darker background for disabled state */
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Too Many Requests</h1>
+        <p>Too many requests! Please try again in a moment.</p>
+        <p id="timer">Please wait for 60 seconds...</p>
+        <p><a id="loginButton" href="{{ url_for('auth.login') }}" class="disabled-link">Return to Login</a></p>
+    </div>
+
+    <script>
+        // Disable the back and refresh buttons in the browser
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
+
+        document.onkeydown = function (e) {
+            if ((e.which || e.keyCode) == 116 || (e.ctrlKey && e.which == 82)) {
+                e.preventDefault();
+            }
+        };
+
+        // Timer function
+        let timeLeft = 60;  // 60 seconds
+        const timerElement = document.getElementById('timer');
+        const loginButton = document.getElementById('loginButton');
+
+        const countdown = setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                timerElement.textContent = `Please wait for ${timeLeft} seconds...`;
+            } else {
+                clearInterval(countdown);
+                timerElement.textContent = 'You can now return to the login page.';
+                loginButton.classList.remove('disabled-link');
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
