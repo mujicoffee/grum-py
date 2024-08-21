@@ -20,7 +20,7 @@
                     <div class="classroomcard">
                         <a href="{{ url_for('staff.classroom_details', code=classroom.code) }} " style="text-decoration:none;">
                         <div class="classroomcardContent">
-                            <h3 style="color: #E8E832;">{{ classroom.code }}</h3>
+                            <h3 style="  color:#ffff70;">{{ classroom.code }}</h3>
                             <div class="classroomStudentInfo"> 
                                  <img src="{{ url_for('static', filename='images/pfp/default.png') }}" alt="Student Icon" class="studentIcon">
                                 <span class="studentCount">{{ classroom.student_count }}</span>

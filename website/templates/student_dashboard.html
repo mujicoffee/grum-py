@@ -114,10 +114,10 @@
                                     <td style="color: white;">Week {{ week }}</td>
                                     <td>
                                         {% if week in completed_modules %}
-                                            <p style="color:#10CF43;">Completed</p>
+                                            <p style="color:#32f064;">Completed</p>
 
                                         {% elif week == current_user.current_module and current_user.current_module <= current_week  %}
-                                           <p style="color: #E8E832 "> Ongoing</p>
+                                           <p style=" color:#ffff70;"> Ongoing</p>
                                         {% else %}
                                           <p style="color:#852f23;">  Not Completed</p>
                                         {% endif %}
@@ -151,10 +151,10 @@
                                     <td>
                                         
                                         {% if week in completed_quizzes %}
-                                            <p style="color:#10CF43;">Completed</p>
+                                            <p style="color:#32f064;">Completed</p>
 
                                         {% elif week == current_user.current_quiz and current_user.current_quiz <= current_week  %}
-                                        <p style="color:#E8E832; "> Ongoing</p>
+                                        <p style=" color:#ffff70; "> Ongoing</p>
 
                                         {% else %}
                                           <p style="color:#852f23;">  Not Completed</p>
@@ -193,9 +193,9 @@
                             {% if current_week*2 - int(progbar) > 4 %}
                                 <p class="statDesc" style="color: #852f23;">You are far behind on the journey.</p>
                             {% elif current_week*2 - int(progbar) > 2 %}
-                                <p class="statDesc" style="color: #E8E832;">You are slightly behind on the journey.</p>
+                                <p class="statDesc" style=" color:#ffff70;">You are slightly behind on the journey.</p>
                             {% else %}
-                                <p class="statDesc" style="color: #10CF43;">You're on track with your journey.</p>
+                                <p class="statDesc" style="color:#32f064;">You're on track with your journey.</p>
                             {% endif %}
                         </div>
                     </div>

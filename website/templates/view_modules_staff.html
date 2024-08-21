@@ -8,12 +8,12 @@
     <ul style="padding-right: 10px;">
         {% for module in modules %}
          
-            <a href="{{ url_for('admin.view_labsheets', module_id=module.id) }}" style="text-decoration:none;">
+            <a href="{{ url_for('staff.view_labsheets', module_id=module.id) }}" style="text-decoration:none;">
                 <div class="classroomcard">
                
                 <div class="classroomcardContent">
                     <li style="list-style-type:none; ">
-                        <h3 style="  color:#ffff70;">{{module.id}}. &nbsp;{{ module.title }}</h3>
+                        <h3 style="color:#ffff70;">{{module.id}}. &nbsp;{{ module.title }}</h3>
                         <p>{{ module.description }}</p>
                        
                     </li>
@@ -27,7 +27,7 @@
 </div>
 <style>
 
-    #AmodulesNav{
+    #SmodulesNav{
         background-color: var(--color-snackbar-bg); 
         border-radius: 10px;
     }

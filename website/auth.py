@@ -6,6 +6,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 from .forms import LoginForm, SignUpForm, OTPForm, ChangePasswordForm, ForgetPasswordForm, ResetPasswordForm, SetupProfilePicForm
 from .otp import generate_otp
 from .emails import *
+
 from .reset_password_token import generate_reset_password_token
 from .recaptcha import verify_recaptcha
 from .encryption import encrypt_token, encrypt_message
@@ -403,6 +404,12 @@ def resend_otp():
 @auth.route('/setup-profilepicture', methods=['GET', 'POST'])
 @login_required
 def setupProfilePic():
+    
+    if current_user.role == 'admin' or current_user.role == 'staff': 
+
+        session['pfp'] = 'default.png'
+        return redirect(url_for('auth.change_password'))
+
     # Retrieve the email from the session 
     email = session.get('email')
 

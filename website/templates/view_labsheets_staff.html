@@ -3,9 +3,9 @@
 {% block title %}Labsheets for Module {{ module.title }}{% endblock %}
 {% block pageTitle %}Labsheets for {{ module.title }} {% endblock %}
 {% block goback %}
-<a href="{{ url_for('admin.view_modules') }}" style="display: flex; align-items: center; width: fit-content; text-decoration: none;">
+<a href="{{ url_for('staff.view_modules') }}" style="display: flex; align-items: center; width: fit-content; text-decoration: none;">
    
-    <p style="color: #E8E832; margin: 0; margin-left: 0.7vw; font-size: 2vmin;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">&larr; &nbsp; Back to modules</p>
+    <p style="color:#ffff70; margin: 0; margin-left: 0.7vw; font-size: 2vmin;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">&larr; &nbsp; Back to modules</p>
 </a>
 {% endblock %}
 {% block content %}
@@ -19,11 +19,11 @@
                
                 <div class="classroomcardContent">
                     <li style="list-style-type:none; ">
-                        <h2 style="  color:#ffff70;">{{ labsheet.title }}</h2>
+                        <h2 style="color:#ffff70;">{{ labsheet.title }}</h2>
                         <p>{{ labsheet.description }}</p>
-                        <a href="{{ url_for('admin.edit_labsheet', labsheet_id=labsheet.id) }}" class="addbutton" style="background-color:#ffc107; color:rgb(255, 255, 255)">Edit Labsheet</a>
-<!-- Link to add a new question to this labsheet -->
-             <a href="{{ url_for('admin.add_question', labsheet_id=labsheet.id) }}" class="addbutton" style="color: rgb(255, 255, 255);">Add Question</a>
+                        <a href="{{ url_for('staff.view_labsheet_questions', labsheet_id=labsheet.id) }}" class="addbutton" style="background-color:#ffc107; color:rgb(255, 255, 255)">View Labsheet</a>
+
+             
                        
                     </li>
                     
@@ -37,7 +37,7 @@
 </div>
 <style>
 
-    #AmodulesNav{
+    #SmodulesNav{
         background-color: var(--color-snackbar-bg); 
         border-radius: 10px;
     }

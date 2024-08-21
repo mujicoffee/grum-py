@@ -4,7 +4,7 @@
 {% block goback %}
 <a href="{{ url_for('staff.classroom_details', code=classroom.code) }}" style="display: flex; align-items: center; width: fit-content; text-decoration: none;">
    
-    <p style="color: #E8E832; margin: 0; margin-left: 0.7vw; font-size: 2vmin;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;"> &larr; &nbsp; Back to {{classroom.code}}</p>
+    <p style="  color:#ffff70; margin: 0; margin-left: 0.7vw; font-size: 2vmin;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;"> &larr; &nbsp; Back to {{classroom.code}}</p>
 </a>
 {% endblock %}
 {% block pageTitle %}Add students to {{ classroom.code }}{% endblock %}
@@ -70,7 +70,7 @@
 
 .form-group {
     font-size: 2em;
-    color: #e7e783;
+    color:#ffff70;
     margin-top: 1vh;
 }
 </style>

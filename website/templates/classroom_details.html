@@ -4,7 +4,7 @@
 {% block goback %}
 <a href="{{ url_for('staff.classroom') }}" style="display: flex; align-items: center; width: fit-content; text-decoration: none;">
  
-    <p style="color: #E8E832; margin: 0; margin-left: 0.7vw; font-size: 2vmin;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;"> &larr; &nbsp;Back to classroom</p>
+    <p style="  color:#ffff70; margin: 0; margin-left: 0.7vw; font-size: 2vmin;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;"> &larr; &nbsp;Back to classroom</p>
 </a>
 {% endblock %}
 
@@ -15,7 +15,7 @@
     
     
     <!-- Table for Staff -->
-    <h3 style="color: #e7e783; font-weight:bolder">Lecturers </h3>
+    <h3 style="color:#ffff70; font-weight:bolder">Lecturers </h3>
     <div class="table-container">
     <table class="staffTable">
         <thead>
@@ -46,7 +46,7 @@
 
     <form style="margin-bottom: 2vh;" class="d-flex" action="{{ url_for('staff.search_students', code=classroom.code) }}" method="GET">
         <input class="form-control me-2 " style="width:40vw;" type="search" placeholder="Search Students" name="query" aria-label="Search" value="{{ request.args.get('query', '') }}">
-        <button style="color:white; margin-right:0.5vw;" class="btn btn-outline-success {{ 'active' if request.args.get('query') }}" type="submit">Search</button>
+        <button style=" background-color:#198754; color:white; margin-left:0.5vw;margin-right:0.5vw;" class="btn btn-outline-success {{ 'active' if request.args.get('query') }}" type="submit">Search</button>
         {% if request.args.get('query') %}
             <a href="{{ url_for('staff.search_students', code=classroom.code) }}" class="btn" style="background-color: rgb(182, 42, 42); color:white;">Cancel</a>
         {% endif %}
@@ -67,7 +67,7 @@
     <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade show active" id="pills-modules" role="tabpanel" aria-labelledby="pills-modules-tab">
             <!-- Table for Students - Modules -->
-            <h3 style="color: #e7e783; font-weight:bolder ;  ">
+            <h3 style="color:#ffff70; font-weight:bolder ;  ">
                 Students ({{ student_count }})
                 <!-- Add Students Link -->
                 <a href="{{ url_for('staff.add_students', code=classroom.code) }}" class="addbutton" >+ Add a new student</a>
@@ -78,15 +78,15 @@
                     <tr>
                         <th>No.</th>
                         <th>Name</th>
-                        <th>Week 1</th>
-                        <th>Week 2</th>
-                        <th>Week 3</th>
-                        <th>Week 4</th>
-                        <th>Week 5</th>
-                        <th>Week 6</th>
-                        <th>Week 7</th>
-                        <th>Week 8</th>
-                        <th>Action</th>
+                        <th style="text-align: center;">Week 1</th>
+                        <th style="text-align: center;">Week 2</th>
+                        <th style="text-align: center;">Week 3</th>
+                        <th style="text-align: center;">Week 4</th>
+                        <th style="text-align: center;">Week 5</th>
+                        <th style="text-align: center;">Week 6</th>
+                        <th style="text-align: center;">Week 7</th>
+                        <th style="text-align: center;">Week 8</th>
+                        <th style="text-align: center;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -99,7 +99,6 @@
                             <td>
                                 {% if week in student_data.completed_modules %}
                                 <div class="rounded-square bg-success"></div>
-
                                 {% else %}
                                 <div class="rounded-square bg-white"></div>
                                 {% endif %}
@@ -122,7 +121,7 @@
         </div>
         <div class="tab-pane fade" id="pills-quizzes" role="tabpanel" aria-labelledby="pills-quizzes-tab">
             <!-- Table for Students - Quizzes -->
-            <h3 style="color: #e7e783; font-weight:bolder ;  ">
+            <h3 style="color:#ffff70; font-weight:bolder ;  ">
                 Students ({{ student_count }})
                 <!-- Add Students Link -->
                 <a href="{{ url_for('staff.add_students', code=classroom.code) }}" class="addbutton" >+ Add a new student</a>
@@ -133,15 +132,15 @@
                     <tr>
                         <th>No.</th>
                         <th>Name</th>
-                        <th>Week 1</th>
-                        <th>Week 2</th>
-                        <th>Week 3</th>
-                        <th>Week 4</th>
-                        <th>Week 5</th>
-                        <th>Week 6</th>
-                        <th>Week 7</th>
-                        <th>Week 8</th>
-                        <th>Action</th>
+                        <th style="text-align: center;">Week 1</th>
+                        <th style="text-align: center;">Week 2</th>
+                        <th style="text-align: center;">Week 3</th>
+                        <th style="text-align: center;">Week 4</th>
+                        <th style="text-align: center;">Week 5</th>
+                        <th style="text-align: center;">Week 6</th>
+                        <th style="text-align: center;">Week 7</th>
+                        <th style="text-align: center;">Week 8</th>
+                        <th >Action</th>
                     </tr>
                 </thead>
                 <tbody>

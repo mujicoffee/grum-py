@@ -83,43 +83,51 @@
     </nav>
 
     <div id="transition-content" style="margin-left:18vw">
-        <h1 class="QUIZtitle">Quizzes</h1>
-        <div class="quiz-list">
-            {% for module in modules %}
-            {% if module.id <= current_user.current_quiz and module.id <= current_week %}
-            <a style="text-decoration:none" href="{{ url_for('student.quiz', quiz_id=module.id) }}" >
-            <div class="quiz-item {% if module.id|string in completed_quizzes %}completed{% else %}not-completed{% endif %}">
-                <div class="quiz-title"><p style="display: inline; color: white;">{{ module.id }}. &nbsp;</p> <span style="color: #6EB6FF;">{{ module.title }}</span>
+     
+            <h1 class="QUIZtitle">Quizzes</h1>
+            <div class="quiz-list">
+            
+                {% for module in modules %}
+        
+                {% if module.id <= current_user.current_quiz and module.id <= current_week %}
+                <a style="text-decoration:none" href="{{ url_for('student.quiz', quiz_id=module.id) }}" >
+                <div class="quiz-item {% if module.id|string in completed_quizzes %}completed{% else %}not-completed{% endif %}">
+                    <div class="quiz-title"><p style="display: inline;  color:#ffff70;">{{ module.id }}. &nbsp;</p> <span style="color: #6EB6FF;">{{ module.title }}</span>
+                    </div>
+                    <div class="quiz-status">
+                        {% if module.id|string in completed_quizzes %}
+                           <p style="color:#10CF43; margin:0">Completed</p> 
+                        {% elif current_user.current_quiz == module.id %}
+                            <p style=" color:#ffff70; margin:0">Ongoing</p>
+                        {% else %}
+                            <p style="color:#F24D38; margin:0">Not Completed</p>
+                        {% endif %}
+                    </div>
+        
                 </div>
-                <div class="quiz-status">
-                    {% if module.id|string in completed_quizzes %}
-                    <p style="color:#10CF43; margin:0">Completed</p>
-                    {% elif current_user.current_quiz == module.id %}
-                    <p style="color:#E8E832; margin:0">Ongoing</p>
-                    {% else %}
-                    <p style="color:#F24D38; margin:0">Not Completed</p>
-                    {% endif %}
+                </a>
+        
+                {% else %}
+                <div class="quiz-item {% if module.id|string in completed_quizzes %}completed{% else %}not-completed{% endif %}">
+                    <div class="quiz-title"><p style="display: inline; color: white;">{{ module.id }}. &nbsp;</p> <span style="color: #6EB6FF;">{{ module.title }}</span>
+                    </div>
+                    <div class="quiz-status">
+                        {% if module.id|string in completed_quizzes %}
+                            Completed
+                        {% else %}
+                            Not Completed
+                        {% endif %}
+                    </div>
+                    <div class="quiz-item-overlay">
+                        <img src="{{ url_for('static', filename='images/extras/lock.png') }}" alt="Locked" style="height: 80%; width:auto;">
+                    </div>
                 </div>
+        
+              {% endif %}
+        
+                {% endfor %}
             </div>
-            </a>
-            {% else %}
-            <div class="quiz-item {% if module.id|string in completed_quizzes %}completed{% else %}not-completed{% endif %}">
-                <div class="quiz-title"><p style="display: inline; color: white;">{{ module.id }}. &nbsp;</p> <span style="color: #6EB6FF;">{{ module.title }}</span>
-                </div>
-                <div class="quiz-status">
-                    {% if module.id|string in completed_quizzes %}
-                    Completed
-                    {% else %}
-                    Not Completed
-                    {% endif %}
-                </div>
-                <div class="quiz-item-overlay">
-                    <img src="{{ url_for('static', filename='images/extras/lock.png') }}" alt="Locked" style="height: 80%; width:auto;">
-                </div>
-            </div>
-            {% endif %}
-            {% endfor %}
-        </div>
+        
     </div>
 
 
@@ -176,29 +184,31 @@
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <input type="hidden" name="quiz_id" value="{{ quiz.id }}">
                     
-                            <div class="form-group" style="margin-right: 26px;">
-                                <p style="color: rgb(238, 72, 72); margin:0; font-size:12px;"></p>
-                                <label id="question" style="font-size: 1.5rem; color:#ffff47; margin-bottom:20px">{{ current_question_index + 1 }}. {{ question.question }}</label><br>
+                            <div class="form-group" style="margin-right: 26px;" >
+                                <p style="color: rgb(238, 72, 72); margin:0; font-size:17px;"></p>
+                                <label id="question" style="font-size: 1rem; color:#ffff47; margin-bottom:10px">{{ current_question_index + 1 }}. {{ question.question }}</label><br>
+                                <div class="quizquestions">
                                 <div class="form-check">
                                     <input type="radio" id="option_A_{{ question.id }}" name="selected_option" value="A">
-                                    <label for="option_A_{{ question.id }}">A) {{ question.option_A }}</label>
+                                    <label for="option_A_{{ question.id }}"> {{ question.option_A }}</label>
                                 </div>
                                 <div class="form-check">
                                     <input type="radio" id="option_B_{{ question.id }}" name="selected_option" value="B">
-                                    <label for="option_B_{{ question.id }}">B) {{ question.option_B }}</label>
+                                    <label for="option_B_{{ question.id }}"> {{ question.option_B }}</label>
                                 </div>
                                 <div class="form-check">
                                     <input type="radio" id="option_C_{{ question.id }}" name="selected_option" value="C">
-                                    <label for="option_C_{{ question.id }}">C) {{ question.option_C }}</label>
+                                    <label for="option_C_{{ question.id }}"> {{ question.option_C }}</label>
                                 </div>
                                 <div class="form-check">
                                     <input type="radio" id="option_D_{{ question.id }}" name="selected_option" value="D">
-                                    <label for="option_D_{{ question.id }}">D) {{ question.option_D }}</label>
+                                    <label for="option_D_{{ question.id }}"> {{ question.option_D }}</label>
                                 </div>
+                            </div>
                             </div>
                     
                             <div class="form-group">
-                                <button  style="background-color:rgb(25, 135, 84); border:none; margin-top:7px; margin-bottom:7px; width:100%;  padding:6px; font-size:1.2rem;" type="submit" class="btn btn-primary">Submit</button>
+                                <button  style="background-color:rgb(25, 135, 84); border:none; margin-top:7px; margin-bottom:7px; width:100%;  padding:3px; font-size:0.7rem;" type="submit" class="btn btn-primary">Submit</button>
                             </div>
                         </form>
                 
@@ -246,7 +256,7 @@
                  <span   class="bossheart-text">x {{boss_health}}</span>
             </div>
             <div class="pfpboss">
-                <img src="{{ url_for('static', filename='images/bosses/' ~ quiz.boss_file ~ '/idle.gif') }}" alt="bosspic" class="bosspic">
+                <img src="{{ url_for('static', filename='images/pfp/skull.png') }}" alt="bosspic" class="bosspic">
             </div>
         </div>
         

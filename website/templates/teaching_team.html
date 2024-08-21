@@ -12,7 +12,7 @@
 
     <form style="margin-bottom: 2vh;" class="d-flex" method="GET" action="{{ url_for('admin.teaching_team') }}">
         <input class="form-control me-2 " style="width:40vw;" type="search" placeholder="Search staff" name="query" aria-label="Search" value="{{ request.args.get('query', '') }}">
-        <button style="color:white; margin-right:0.5vw;" class="btn btn-outline-success {{ 'active' if request.args.get('query') }}" type="submit">Search</button>
+        <button style=" background-color:#198754; color:white; margin-left:0.5vw;margin-right:0.5vw;" class="btn btn-outline-success {{ 'active' if request.args.get('query') }}" type="submit">Search</button>
         {% if request.args.get('query') %}
             <a href="{{ url_for('admin.teaching_team') }}" class="btn" style="background-color: rgb(182, 42, 42); color:white;">Cancel</a>
         {% endif %}

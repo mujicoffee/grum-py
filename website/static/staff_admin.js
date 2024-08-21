@@ -54,3 +54,35 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const table = document.querySelector('table');
+    const cols = table.querySelectorAll('th');
+
+    cols.forEach(col => {
+        const resizer = document.createElement('div');
+        resizer.classList.add('resizer');
+        col.appendChild(resizer);
+
+        let startX, startWidth;
+
+        resizer.addEventListener('mousedown', (e) => {
+            startX = e.clientX;
+            startWidth = col.offsetWidth;
+
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', () => {
+                document.removeEventListener('mousemove', handleMouseMove);
+            });
+        });
+
+        function handleMouseMove(e) {
+            const newWidth = startWidth + (e.clientX - startX);
+            col.style.width = `${newWidth}px`;
+            // Adjust column width for the rest of the table
+            table.querySelectorAll(`td:nth-child(${Array.from(col.parentElement.children).indexOf(col) + 1})`).forEach(td => {
+                td.style.width = `${newWidth}px`;
+            });
+        }
+    });
+});
+

@@ -21,7 +21,7 @@ All quizzes
         <div class="classroomcard">
             <div class="classroomcardContent">
               
-                <h5 >Module {{ module_id }}:<span style="color:#E8E832"> {{quiz.title}}</span></h5> 
+                <h5 >Module {{ module_id }}:<span style="  color:#ffff70;"> {{quiz.title}}</span></h5> 
                 <ul class="list-group list-group-flush">
                  
                  
@@ -37,6 +37,11 @@ All quizzes
         {% endfor %}
 
 
-       
+       <style>
+        #AquizzesNav{
+            background-color: var(--color-snackbar-bg); 
+            border-radius: 10px;
+        }
+       </style>
 
 {% endblock %}

@@ -44,7 +44,7 @@
         <ul style="margin-right: 20px;   font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; list-style-type: none;">
             {% for item in revision_data %}
                 <li style="background-color: #6eb6ff9f; margin-bottom:30px; padding:15px; border-radius:5px;">
-                    <p style="color: #E8E832;"><strong>Question {{ item.number }}:</strong> {{ item.question }}</p>
+                    <p style="  color:#ffff70;"><strong>Question {{ item.number }}:</strong> {{ item.question }}</p>
                     <ul style="margin-bottom: 10px;">
                         <li class="{{ 'correct' if item.correct_option == 'A' else 'incorrect' }}">A: {{ item.options['A'] }}</li>
                         <li class="{{ 'correct' if item.correct_option == 'B' else 'incorrect' }}">B: {{ item.options['B'] }}</li>

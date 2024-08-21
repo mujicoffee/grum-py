@@ -541,7 +541,7 @@ def quizzes_by_module(module_id, quiz_id):
         return redirect(url_for('staff.dashboard') if current_user.role == 'staff' else url_for('student.dashboard'))
 
     current_week, _ = get_current_week_and_time()
-    
+
     # Pagination for quizzes
     page = request.args.get('page', 1, type=int)
     per_page = 5
@@ -561,7 +561,7 @@ def quizzes_by_module(module_id, quiz_id):
         quiz_questions_query = quiz_questions_query.filter(QuizQuestion.question.ilike(f'%{search_query}%'))
 
     quiz_questions_pagination = quiz_questions_query.paginate(page=questions_page, per_page=questions_per_page, error_out=False)
-    
+
     delete_forms = {}
     edit_forms = {}
 

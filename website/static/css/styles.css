@@ -1,14 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+@font-face {
+  font-family: Pixel;
+  src: url(/static/fonts/MinecraftRegular-Bmg3.otf) ;
+  font-weight: normal;
+  font-style: normal;
+}
 
 /* Track */
 
 /* Define CSS variables for general styles */
 :root {
-  --font-primary: 'Pixelify Sans', sans-serif;
+  --font-primary: Pixel, sans-serif;
   --font-fallback: Arial, sans-serif;
 
   --color-navbar-bg: #4C6444;
-  --color-welcome-text: #E8E832;
+  --color-welcome-text: #ffff70;;
   --color-desc-text: #ffffff;
   --color-border: #000000;
   --color-card-bg: #CEC989;
@@ -530,7 +536,7 @@ button:hover {
   border-radius: 25%;
   text-align: center;
   font-size: 1.2rem;
-  background-color: #1EA9E0;
+  background-color: #6EB6FF;
   color: white;
   border: none;
 }
@@ -623,7 +629,7 @@ button#verifyButton:hover {
 }
 
 .requirement {
-  color: red;
+  color: rgb(172, 3, 3);
   list-style-type: none;
   padding: 0;
 }
@@ -681,7 +687,7 @@ button#verifyButton:hover {
 }
 
 .stepdesc {
-  color: rgb(71, 71, 71);
+  color: rgb(255, 255, 255);
   font-size: 15px;
   padding-bottom: 20px;
 }
@@ -693,7 +699,7 @@ button#verifyButton:hover {
   row-gap: 30px;
   height: fit-content; /* Set the maximum height */
 
-  margin-bottom: 155px;
+  margin-bottom: 100px;
 }
 
 /* Hide scrollbar for setupContent */
@@ -765,8 +771,8 @@ button#verifyButton:hover {
 .button-wrapper {
   display: flex;
   justify-content: center;
-  margin-top: 20px; /* Adjust margin as needed */
-  padding-bottom: 70px;
+  margin-top: 70px; /* Adjust margin as needed */
+  padding-bottom: 30px;
 }
 
 .profile-locked::before {
@@ -828,7 +834,7 @@ button#verifyButton:hover {
    
     font-size: 3.5vmin;
   
-    color: #E8E832;
+    color:#ffff70;
     text-decoration: none;
 
 }
@@ -882,7 +888,9 @@ button#verifyButton:hover {
 }
 
 
-.button-wrapper {
+.change-wrapper {
+  display: flex;
+  justify-content: center;
   padding-top: 20px; /* Adjust padding to maintain spacing */
   margin-top: 13vh; /* Push the button to the bottom of the content */
 }
@@ -1279,11 +1287,11 @@ textarea#code {
   background-color: transparent;
 }
 .module-week-number {
-  color: white;
+  color:#ffff70;
 }
 
 .module-title {
-  color: #6EB6FF;
+  color: #ffffff;
 }
 
 .accordion-item-locked {
@@ -1819,6 +1827,12 @@ font-weight: bolder;
   justify-content: center;
 }
 
+.quizquestions{
+  max-height: 105px;
+  overflow-y: auto;
+  font-size: 0.8rem;
+}
+
 .quizcard-container {
   display: none; /* Initially hidden */
   position: relative;
@@ -1903,9 +1917,7 @@ font-weight: bolder;
 
 
 
-.quizcard-content label{
-  font-size: 1.2rem;
-}
+
 
 .quizcard-header {
   border-bottom: 2px solid var(--color-accent); /* Placeholder for accent color */
@@ -1928,14 +1940,16 @@ font-weight: bolder;
 
 #quiz-form{
   font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-  max-height: 30vh;
-  overflow-y: auto;
+  max-height: 40vh;
+  overflow: auto;
+width: 100%;
+
   
 }
 
 .form-check input[type="radio"] {
   transform: scale(1.2);
-  margin-right: 8px; /* Optional: Adjust spacing between radio button and label */
+  margin-right: 2px; /* Optional: Adjust spacing between radio button and label */
 }
 
 .quizcard-text {
@@ -2135,7 +2149,7 @@ display: flex;
 }
 
 .bosspic {
-  height: fit-content;
+  height: 7vmin;
   animation: popIn 0.5s forwards;
 }
 
@@ -2255,7 +2269,7 @@ margin-top: 2vh;
    max-width: 75vw;
 
 
-   font-size: 0.7rem;
+   font-size: 1rem;
    
     margin-left: 3vw;
    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
@@ -2543,6 +2557,22 @@ max-height: 20vh;
   
 }
 
+.resizer {
+  display: inline-block;
+  width: 1px;
+  height: 100%;
+  background: #ffffff;
+  cursor: col-resize;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+  user-select: none; /* Prevents text selection while resizing */
+}
+
+th:hover .resizer {
+  background: #ffffff;
+}
 
 
 .table-container {
@@ -2555,11 +2585,12 @@ max-height: 20vh;
 .staffTable {
   width: 100%;
   border-collapse: collapse;
+  table-layout: auto;
 }
 
 .staffTable th, .staffTable td {
   padding: 5px;
- text-align: center;
+ text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

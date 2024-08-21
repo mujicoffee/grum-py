@@ -14,7 +14,7 @@ Questions for {{quiz.title}}
 {% block goback %}
 <a href="{{ url_for('admin.quizzes') }}" style="display: flex; align-items: center; width: fit-content; text-decoration: none;">
    
-    <p style="color: #E8E832; margin: 0; margin-left: 0.7vw; font-size: 2vmin;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;"> &larr; &nbsp; Back to quizzes</p>
+    <p style="  color:#ffff70; margin: 0; margin-left: 0.7vw; font-size: 2vmin;font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;"> &larr; &nbsp; Back to quizzes</p>
 </a>
 {% endblock %}
 
@@ -22,47 +22,48 @@ Questions for {{quiz.title}}
 <div class="roomDetailsCont">
 
 
-    <!-- Search -->
-  
-    <form action="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id) }}" method="GET" class="mb-4">
-        <div class="input-group">
-            <input type="text" name="search" class="form-control" placeholder="Search questions" value="{{ search_query }}" style="max-width: 300px;">
-            <button class="btn btn-primary" type="submit">
-                <i class="bi bi-search"></i> Search
-            </button>
-            {% if search_query %}
-                <a href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id) }}" class="btn btn-danger ms-2">
-                    <i class="bi bi-x"></i> Cancel
-                </a>
-            {% endif %}
-        </div>
-    </form>
+  <!-- Search -->
+  <form action="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id) }}" method="GET" class="mb-4">
+    <div class="input-group" style="justify-content:center;">
+        <input type="text" name="search" class="form-control" placeholder="Search questions" value="{{ search_query }}" style="max-width: 40vw;">
 
-    <!-- Pagination Controls for Questions -->
-    {% if quiz_id %}
 
-    <nav aria-label="Questions pagination" class="mb-4">
-        <ul class="pagination justify-content-center">
-            {% if quiz_questions_pagination.has_prev %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id, questions_page=quiz_questions_pagination.prev_num) }}">Previous</a>
-                </li>
-            {% endif %}
-            {% for page_num in quiz_questions_pagination.iter_pages() %}
-                {% if page_num %}
-                    <li class="page-item {% if page_num == quiz_questions_pagination.page %}active{% endif %}">
-                        <a class="page-link" href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id, questions_page=page_num) }}">{{ page_num }}</a>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled"><span class="page-link">…</span></li>
-                {% endif %}
-            {% endfor %}
-            {% if quiz_questions_pagination.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id, questions_page=quiz_questions_pagination.next_num) }}">Next</a>
-                </li>
-            {% endif %}
-        </ul>
+        <button style=" background-color:#198754; color:white; margin-left:0.5vw;margin-right:0.5vw;" class="btn btn-outline-success {{ 'active' if request.args.get('query') }}" type="submit">Search</button>
+        {% if search_query %}
+
+            <a href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id) }}" class="btn" style="background-color: rgb(182, 42, 42); color:white;">Cancel</a>
+        {% endif %}
+    </div>
+</form>
+
+
+
+   <!-- Pagination Controls for Questions -->
+   {% if quiz_id %}
+
+
+   <nav aria-label="Questions pagination" class="mb-4">
+       <ul class="pagination justify-content-center">
+           {% if quiz_questions_pagination.has_prev %}
+               <li class="page-item">
+                   <a class="page-link" href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id, questions_page=quiz_questions_pagination.prev_num, search=search_query) }}">Previous</a>
+               </li>
+           {% endif %}
+           {% for page_num in quiz_questions_pagination.iter_pages() %}
+               {% if page_num %}
+                   <li class="page-item {% if page_num == quiz_questions_pagination.page %}active{% endif %}">
+                       <a class="page-link" href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id, questions_page=page_num, search=search_query) }}">{{ page_num }}</a>
+                   </li>
+               {% else %}
+                   <li class="page-item disabled"><span class="page-link">…</span></li>
+               {% endif %}
+           {% endfor %}
+           {% if quiz_questions_pagination.has_next %}
+               <li class="page-item">
+                   <a class="page-link" href="{{ url_for('admin.quizzes_by_module', module_id=module_id, quiz_id=quiz_id, questions_page=quiz_questions_pagination.next_num, search=search_query) }}">Next</a>
+               </li>
+           {% endif %}
+       </ul>
     </nav>
 
     <!-- Display Questions -->
@@ -163,10 +164,19 @@ Questions for {{quiz.title}}
             </div>
         {% endfor %}
     </div>
-    {% endif %}
+
 </div>
 
+
+    
+    {% endif %}
+    
+
 <style>
+    #AquizzesNav{
+        background-color: var(--color-snackbar-bg); 
+        border-radius: 10px;
+    }
     .list-group-item {
         background-color: #f8f9fa;
         border: 1px solid #dee2e6;

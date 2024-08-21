@@ -77,13 +77,13 @@
         {% if module.id <= current_user.current_quiz and module.id <= current_week %}
         <a style="text-decoration:none" href="{{ url_for('student.quiz', quiz_id=module.id) }}" >
         <div class="quiz-item {% if module.id|string in completed_quizzes %}completed{% else %}not-completed{% endif %}">
-            <div class="quiz-title"><p style="display: inline; color: white;">{{ module.id }}. &nbsp;</p> <span style="color: #6EB6FF;">{{ module.title }}</span>
+            <div class="quiz-title"><p style="display: inline;  color:#ffff70;">{{ module.id }}. &nbsp;</p> <span style="color: #ffffff;">{{ module.title }}</span>
             </div>
             <div class="quiz-status">
                 {% if module.id|string in completed_quizzes %}
                    <p style="color:#10CF43; margin:0">Completed</p> 
                 {% elif current_user.current_quiz == module.id %}
-                    <p style="color:#E8E832; margin:0">Ongoing</p>
+                    <p style=" color:#ffff70; margin:0">Ongoing</p>
                 {% else %}
                     <p style="color:#F24D38; margin:0">Not Completed</p>
                 {% endif %}
@@ -94,7 +94,7 @@
 
         {% else %}
         <div class="quiz-item {% if module.id|string in completed_quizzes %}completed{% else %}not-completed{% endif %}">
-            <div class="quiz-title"><p style="display: inline; color: white;">{{ module.id }}. &nbsp;</p> <span style="color: #6EB6FF;">{{ module.title }}</span>
+            <div class="quiz-title"><p style="display: inline; color:#ffff70;">{{ module.id }}. &nbsp;</p> <span style="color: #ffffff;">{{ module.title }}</span>
             </div>
             <div class="quiz-status">
                 {% if module.id|string in completed_quizzes %}

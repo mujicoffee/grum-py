@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app as app
 from sqlalchemy import select
 from flask_login import login_required, current_user
-from .models import User, Classroom,Quiz,QuizQuestion, staff_classroom
-from .forms import AddStudentsForm, AddStudentsFileForm
+from .models import User, Classroom,Quiz,QuizQuestion, staff_classroom, Module, Labsheet, LabsheetQuestion
+from .forms import AddStudentsForm, AddStudentsFileForm, LabsheetForm, QuestionForm
 from .session import session_timeout
 from .emails import send_student_account_setup_email, send_virus_liability_email
 from .week import get_current_week_and_time
@@ -99,7 +99,7 @@ def classroom_details(code):
             'completed_quizzes': completed_quizzes
         })
     student_count = len(students_data)
-    flash(f"{completed_quizzes}", category='danger')
+
     return render_template("classroom_details.html", user=current_user, classroom=classroom, students_data=students_data, staff=staff, student_count=student_count,current_week=current_week)
 
 
@@ -346,6 +346,68 @@ def remove_student(code, student_id):
 
     flash(f'Student {student.name} ({student.email}) removed successfully.', category='success')
     return redirect(url_for('staff.classroom_details', code=code))
+
+
+@staff.route('/modules', methods=['GET'])
+@login_required
+@session_timeout
+def view_modules():
+    if current_user.role != 'staff':
+        flash("Unauthorized access.", category='danger')
+        return redirect(url_for('student.dashboard'))
+    
+    current_week,_=  get_current_week_and_time()
+    modules = Module.query.all()
+
+    return render_template('view_modules_staff.html', user=current_user, modules=modules,current_week=current_week)
+
+
+
+@staff.route('/modules/<int:module_id>/labsheets', methods=['GET'])
+@login_required
+@session_timeout
+def view_labsheets(module_id):
+    if current_user.role != 'staff':
+        flash("Unauthorized access.", category='danger')
+        return redirect(url_for('student.dashboard'))
+    
+    current_week,_=  get_current_week_and_time()
+    module = Module.query.get_or_404(module_id)
+    labsheets = Labsheet.query.filter_by(module_id=module_id).all()
+    labsheet_count = len(labsheets)
+    return render_template(
+        'view_labsheets_staff.html',
+        current_week=current_week,
+        user=current_user,
+        module=module,
+        labsheets=labsheets,
+        labsheet_count=labsheet_count
+    )
+    
+@staff.route('/labsheets/edit/<int:labsheet_id>', methods=['GET'])
+@login_required
+@session_timeout
+def view_labsheet_questions(labsheet_id):
+    if current_user.role != 'staff':
+        flash("Unauthorized access.", category='danger')
+        return redirect(url_for('student.dashboard'))
+
+    current_week, _ = get_current_week_and_time()
+    labsheet = Labsheet.query.get_or_404(labsheet_id)
+    questions = LabsheetQuestion.query.filter_by(labsheet_id=labsheet_id).all()
+
+    labsheet_form = LabsheetForm(obj=labsheet)
+    question_forms = [QuestionForm(obj=question) for question in questions]
+
+    return render_template(
+        'view_labsheet_staff.html',  
+        labsheet=labsheet,
+        current_week=current_week,
+        labsheet_form=labsheet_form,
+        question_forms=question_forms,
+        module_id=labsheet.module_id
+    )
+
 
 @staff.route('/quizzes', methods=['GET'])
 @login_required
