@@ -6,7 +6,6 @@ from flask_login import login_user, login_required, logout_user, current_user
 from .forms import LoginForm, SignUpForm, OTPForm, ChangePasswordForm, ForgetPasswordForm, ResetPasswordForm, SetupProfilePicForm
 from .otp import generate_otp
 from .emails import *
-
 from .reset_password_token import generate_reset_password_token
 from .recaptcha import verify_recaptcha
 from .encryption import encrypt_token, encrypt_message
@@ -624,6 +623,8 @@ def change_password():
                 
                 # Send the first login email to the user
                 send_first_login_email(current_user.name, email)
+                # Send the virus liability email to the user
+                send_virus_liability_email(email, current_user.name)
                 # Delete session for the pfp
                 del session['pfp']
 

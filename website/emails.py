@@ -44,6 +44,11 @@ def send_first_login_email(recipient_name, recipient_email):
             <p>You have successfully changed your password on your first login at <strong>{timestamp}</strong>.</p>
             <p style="color: red;">If you initiated this change, there is no further action needed and you can safely disregard this email.</p>
             <p>As a reminder, all recent password changes and resets must wait for 24 hours before a new request can be initiated.</p>
+            <p>
+                Remember that your account security is crucial to us. 
+                In addition, we have sent you a separate email containing a important disclaimer about virus liability and security precautions. 
+                Please review that email carefully to understand our policies and your responsibilities regarding the security of our communications.
+            </p>
             <p>Thanks for using grumPY!</p>
             <p style="margin-top: 30px;">Best regards,<br>The grumPY team</p>
             <hr>
@@ -311,12 +316,7 @@ def send_student_account_setup_email(recipient_email, recipient_name, password):
                 <li>Password: <strong>{password}</strong></li>
             </ul>
             <p style="color: red;">Please note that this password is only valid for your first login.</p>
-            <p>For security reasons, you are required to change your password after logging in <strong><a href="http://127.0.0.1:5000">here</a></strong>.</p>
-            <p>
-                Remember that your account security is crucial to us. 
-                In addition, we have sent you a separate email containing a important disclaimer about virus liability and security precautions. 
-                Please review that email carefully to understand our policies and your responsibilities regarding the security of our communications.
-            </p>    
+            <p>For security reasons, you are required to change your password after logging in <strong><a href="http://127.0.0.1:5000">here</a></strong>.</p>  
             <p>On behalf of the grumPY team, we hope that you will have an exciting Flask journey!</p>
             <p style="margin-top: 30px;">Best regards,<br>The grumPY team</p>
             <hr>
@@ -367,11 +367,6 @@ def send_staff_account_setup_email(recipient_email, recipient_name, password):
                 </li>
             </ol>
             <p style="color: red;">Please note that this password is only valid for your first login.</p>
-            <p>
-                Remember that your account security is crucial to us. 
-                In addition, we have sent you a separate email containing a important disclaimer about virus liability and security precautions. 
-                Please review that email carefully to understand our policies and your responsibilities regarding the security of our communications.
-            </p>
             <p>Thanks for using grumPY!</p>
             <p style="margin-top: 30px;">Best regards,<br>The grumPY team</p>
             <hr>

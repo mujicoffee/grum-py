@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from .models import User, Classroom,Quiz,QuizQuestion, staff_classroom, Module, Labsheet, LabsheetQuestion
 from .forms import AddStudentsForm, AddStudentsFileForm, LabsheetForm, QuestionForm
 from .session import session_timeout
-from .emails import send_student_account_setup_email, send_virus_liability_email
+from .emails import send_student_account_setup_email
 from .week import get_current_week_and_time
 from . import db, bcrypt
 import pandas as pd
@@ -267,7 +267,6 @@ def add_students(code):
 
                     # Send an email to the student with their temporary password
                     send_student_account_setup_email(email, name, password)
-                    send_virus_liability_email(email, name)
 
                 flash("Students added successfully.", category='success')
                 return redirect(url_for('staff.classroom_details', code=code))
@@ -305,7 +304,6 @@ def add_students(code):
 
         # Send an email to the student with their temporary password
         send_student_account_setup_email(email, name, password)
-        send_virus_liability_email(email, name)
 
         flash(f'Student {name} ({email}) added successfully.', category='success')
         return redirect(url_for('staff.classroom_details', code=code))

@@ -5,7 +5,7 @@ from .session import session_timeout
 from .week import get_current_week_and_time
 from .models import User, Classroom, Logs, Quiz, QuizQuestion, Module, Labsheet, LabsheetQuestion, AdminSettings
 from .forms import AddStaffFileForm, AddStaffForm, UploadQuizForm, EditQuestionForm, DeleteQuestionForm, AddModuleForm, LabsheetForm, QuestionForm, UploadLabsheetForm, StartDateForm
-from .emails import send_staff_account_setup_email, send_virus_liability_email, send_deactivation_warning_email, send_reactivation_warning_email
+from .emails import send_staff_account_setup_email, send_deactivation_warning_email, send_reactivation_warning_email
 from .logs import log_user_activity
 from . import db, bcrypt, scheduler
 import pandas as pd
@@ -396,7 +396,6 @@ def add_staff():
 
                 db.session.commit()
                 send_staff_account_setup_email(email, name, password)
-                send_virus_liability_email(email, name)
 
             flash("Staff added successfully.", category='success')
             return redirect(url_for('admin.teaching_team'))
@@ -429,7 +428,6 @@ def add_staff():
 
         db.session.commit()
         send_staff_account_setup_email(email, name, password)
-        send_virus_liability_email(email, name)
 
         flash(f'Staff member {name} ({email}) added successfully.', category='success')
         return redirect(url_for('admin.teaching_team'))
