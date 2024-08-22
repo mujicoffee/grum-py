@@ -92,6 +92,7 @@ def create_app():
         if app.config['WHITELISTED_IPS'] and ip not in app.config['WHITELISTED_IPS']:
             abort(403)  # Forbidden
 
+    @app.before_request
     def check_session_token():
         if current_user.is_authenticated:
             session_token = flask_session.get('session_token')
