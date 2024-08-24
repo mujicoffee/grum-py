@@ -657,6 +657,12 @@ def change_password():
 
 @auth.route('/forget-password', methods=['GET', 'POST'])
 def forget_password():
+    if current_user.is_authenticated:
+        # Check whether user is logged in
+        redirect_response = check_session()
+        if redirect_response:
+            return redirect_response
+
     # Initialise the forget password form
     form = ForgetPasswordForm()
 
@@ -735,6 +741,12 @@ def forget_password():
 
 @auth.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
+    if current_user.is_authenticated:
+        # Check whether user is logged in
+        redirect_response = check_session()
+        if redirect_response:
+            return redirect_response
+
     # Load the pepper value from the config
     pepper = app.config.get('PEPPER', '')
 
