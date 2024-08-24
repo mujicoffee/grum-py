@@ -738,9 +738,7 @@ def reset_password(token):
     # Load the pepper value from the config
     pepper = app.config.get('PEPPER', '')
 
-    email_substrings = extract_substrings(user.email.split('@')[0])  # Username part only
-    # Initialise the reset password form
-    form = ResetPasswordForm()
+    # Hash the token using SHA-256
     hashed_token = hashlib.sha256(token.encode('utf-8')).hexdigest()
 
     # Query the database for a user with the given reset password token
@@ -760,84 +758,74 @@ def reset_password(token):
         if user.last_password_change and (datetime.now() - user.last_password_change < timedelta(days=1)):
             user.reset_password_token = None
             db.session.commit()
-            # Calculate the timestamp for when the password reset will be available again
             available_reset_time = user.last_password_change + timedelta(days=1)
             send_reset_password_suspension_email(user.email, user.name, available_reset_time)
             log_user_activity(user.id, 'fail', 'Reset Password', 'Password change attempted too soon.')
             flash('You can only change your password once every 24 hours. Please try again later.', category='danger')
             return redirect(url_for('auth.login'))
 
+        # Initialise the reset password form
+        form = ResetPasswordForm()
+
         # Validate the form submission
         if form.validate_on_submit():
-            # Retrieve the new and confirm password from the form
             newPassword = form.newPassword.data
             confirmPassword = form.confirmPassword.data
 
-            # Check if the password has 12 or more characters
+            # Extract substrings from the email for validation
+            email_substrings = extract_substrings(user.email.split('@')[0])  # Username part only
+
+            # Check if the password meets the criteria
             if len(newPassword) < 12:
                 flash('New password must be at least 12 characters long.', category='danger')
                 log_user_activity(user.id, 'fail', 'Reset Password', 'New password too short.')
-            # Check if the password has at least 1 uppercase letter
             elif not re.search(r'[A-Z]', newPassword):
                 flash('New password must contain at least one uppercase letter.', category='danger')
                 log_user_activity(user.id, 'fail', 'Reset Password', 'New password missing uppercase letter.')
-            # Check if the password has at least 1 lowercase letter
             elif not re.search(r'[a-z]', newPassword):
-                log_user_activity(user.id, 'fail', 'Reset Password', 'New password missing lowercase letter.')
                 flash('New password must contain at least one lowercase letter.', category='danger')
-            # Check if the password has at least 1 number
+                log_user_activity(user.id, 'fail', 'Reset Password', 'New password missing lowercase letter.')
             elif not re.search(r'[0-9]', newPassword):
-                log_user_activity(user.id, 'fail', 'Reset Password', 'New password missing number.')
                 flash('New password must contain at least one number.', category='danger')
-            # Check if the password has at least 1 special character
+                log_user_activity(user.id, 'fail', 'Reset Password', 'New password missing number.')
             elif not re.search(r'[!@#$%^&*()]', newPassword):
-                log_user_activity(user.id, 'fail', 'Reset Password', 'New password missing special character.') 
-                flash('New password must contain at least one special character.', category='danger') 
-            # Check if both passwords match
+                flash('New password must contain at least one special character.', category='danger')
+                log_user_activity(user.id, 'fail', 'Reset Password', 'New password missing special character.')
             elif newPassword != confirmPassword:
-                log_user_activity(user.id, 'fail', 'Reset Password', 'Passwords do not match.')
                 flash('Passwords don\'t match.', category='danger')
-            # Check if the new password is the same as the existing password 
+                log_user_activity(user.id, 'fail', 'Reset Password', 'Passwords do not match.')
             elif bcrypt.check_password_hash(user.password, newPassword):
-                log_user_activity(user.id, 'fail', 'Reset Password', 'New password same as current password.')
                 flash('New password cannot be the same as the current password.', category='danger')
+                log_user_activity(user.id, 'fail', 'Reset Password', 'New password same as current password.')
             elif any(sub in newPassword.lower() for sub in email_substrings):
                 flash('New password cannot contain parts of your email address.', category='danger')
-                
+                log_user_activity(user.id, 'fail', 'Reset Password', 'New password contains parts of email address.')
             else:
                 password_history = json.loads(user.password_history or '[]')
                 if any(bcrypt.check_password_hash(pw, newPassword) for pw in password_history):
                     flash('New password cannot be the same as any of the last used passwords.', category='danger')
                 else:
                     password_history.append(user.password)  # Add the old password to history
-                
-                # Hash the new password                    
                     if len(password_history) > 15:
                         password_history.pop(0)  # Maintain a maximum of 15 passwords
-
                     user.password_history = json.dumps(password_history)   
+                    
+                    # Hash the new password
                     hashed_password = bcrypt.generate_password_hash(newPassword + pepper).decode('utf-8')
-                    # Update the user's password in the database
                     user.password = hashed_password
                     user.reset_password_token = None
-                    # Update the last reset password time
                     user.last_reset_password_time = datetime.now()
-                    # Update the last password  time
                     user.last_password_change = datetime.now()
-                    # Reset the forget password attempts after successful password reset
                     user.forget_password_attempts = 0
-
-                    # Deactivated accounts only
-                    # Reset the login attempts and account status for reactivation
                     user.login_attempts = 0
                     user.is_active = 'Yes'
                     db.session.commit()
 
-                # Send the reset password confirmation email to the user
-                send_reset_password_email(user.name, user.email)
-                log_user_activity(user.id, 'pass', 'Reset Password', 'Password reset successfully.')
-                flash('Password reset successfully, you may login with the new password.', category='success')
-                return redirect(url_for('auth.login'))
+                    # Send the reset password confirmation email to the user
+                    send_reset_password_email(user.name, user.email)
+                    log_user_activity(user.id, 'pass', 'Reset Password', 'Password reset successfully.')
+                    flash('Password reset successfully, you may login with the new password.', category='success')
+                    return redirect(url_for('auth.login'))
 
     else:
         flash('Invalid or expired reset link.', category='danger')
