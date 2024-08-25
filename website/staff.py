@@ -256,7 +256,7 @@ def add_students(code):
                     email = row.get('email')
 
                     # Generate a random temporary password for each student 
-                    password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+                    password = ''.join(random.choices(string.ascii_letters + string.digits + string.punctuation, k=12))
                     # Apply pepper and hash the password
                     hashed_password = bcrypt.generate_password_hash(password + pepper).decode('utf-8')
                     
@@ -293,7 +293,7 @@ def add_students(code):
             return redirect(url_for('staff.add_students', code=code))
 
         # Generate a random temporary password for each student
-        password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+        password = ''.join(random.choices(string.ascii_letters + string.digits + string.punctuation, k=12))
         # Apply pepper and hash the password
         hashed_password = bcrypt.generate_password_hash(password + pepper).decode('utf-8')
 

@@ -381,7 +381,7 @@ def add_staff():
                 classes = str(classes).strip()
                 assigned_classrooms = [cls.strip() for cls in classes.split(',')] if classes else []
 
-                password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+                password = ''.join(random.choices(string.ascii_letters + string.digits + string.punctuation, k=12))
                 hashed_password = bcrypt.generate_password_hash(password + pepper).decode('utf-8')
 
                 new_staff = User(email=email, name=name, password=hashed_password, role='staff', first_login='Yes')
@@ -412,7 +412,7 @@ def add_staff():
             flash(f'Staff member with email {email} already exists', category='danger')
             return redirect(url_for('admin.add_staff'))
 
-        password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+        password = ''.join(random.choices(string.ascii_letters + string.digits + string.punctuation, k=12))
         hashed_password = bcrypt.generate_password_hash(password + pepper).decode('utf-8')
 
         new_staff = User(email=email, name=name, password=hashed_password, role='staff', first_login='Yes')
