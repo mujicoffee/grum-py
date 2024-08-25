@@ -41,7 +41,7 @@
 
     <img id="quizstartBG" src="{{ url_for('static', filename='images/bg/quizzesBG.png') }}" alt="Background Image">
 
-    <nav class="navbar" id="navbartransition">
+    <nav class="navbar">
         <div class="navbarContent">
             <div class="LogoAndText">
                 <img class="navbarLogo" src="{{ url_for('static', filename='images/logo/grumPY.png') }}" alt="Logo">
@@ -49,32 +49,32 @@
             </div>
             <ul class="navbarList">
                 <li class="nav-item">
-                    <div id="dashboardNav" class="nav-item-container">
-                        <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                    <div id="dashboardNav" class="nav-item-container" >
+                        <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/dashboard.png') }}"  style="width: 60px; height:auto; " alt="Dashboard Icon">
                         <a class="nav-link" href="{{ url_for('student.dashboard') }}">Dashboard</a>
                     </div>
                 </li>
                 <li class="nav-item">
-                    <div id="rankingNav" class="nav-item-container">
-                        <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Ranking Icon">
+                    <div id="rankingNav" class="nav-item-container ">
+                        <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/ranking.png') }}"  style="width: 50px; height:auto; " alt="Ranking Icon">
                         <a class="nav-link" href="{{ url_for('student.rankings') }}">Ranking</a>
                     </div>
                 </li>
                 <li class="nav-item">
-                    <div id="modulesNav" class="nav-item-container">
-                        <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Modules Icon">
+                    <div id="modulesNav" class="nav-item-container" >
+                        <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/modules.png') }}"  style="width: 50px; height:auto; " alt="Modules Icon">
                         <a class="nav-link" href="{{ url_for('student.modules') }}">Modules</a>
                     </div>
                 </li>
                 <li class="nav-item">
-                    <div id="QuizNav" class="nav-item-container" style="background-color: var(--color-snackbar-bg); border-radius: 10px;">
-                        <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Quiz Icon">
+                    <div id="QuizNav" class="nav-item-container"  style="background-color: var(--color-snackbar-bg); border-radius: 10px;">
+                        <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/quiz.png') }}"  style="width: 50px; height:auto; " alt="Quiz Icon">
                         <a class="nav-link" href="{{ url_for('student.displayQuiz') }}">Quiz</a>
                     </div>
                 </li>
                 <li class="nav-item">
                     <div id="LogoutNav" class="nav-item-container">
-                        <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Logout Icon">
+                        <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/logout.png') }}"  style="width: 50px; height:auto; " alt="Logout Icon">
                         <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
                     </div>
                 </li>

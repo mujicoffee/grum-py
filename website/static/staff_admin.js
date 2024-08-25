@@ -35,24 +35,7 @@ window.onload = function() {
     updateTime();
     };
 
-document.addEventListener('DOMContentLoaded', function() {
-    var overlay = document.getElementById('overlay');
-    var loading = document.getElementById('loading');
 
-    // Select all forms on the page
-    var forms = document.querySelectorAll('form');
-
-    forms.forEach(function(form) {
-        form.addEventListener('submit', function(event) {
-            overlay.style.display = 'flex'; // show the overlay
-            loading.style.display = 'block'; // show loading indicator
-
-            // Optionally, you can prevent the form from submitting immediately
-            // to ensure the overlay shows up before form submission
-            // event.preventDefault();
-        });
-    });
-});
 
 document.addEventListener('DOMContentLoaded', () => {
     const table = document.querySelector('table');

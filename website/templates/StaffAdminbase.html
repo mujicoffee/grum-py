@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="shortcut icon" type="image/x-icon" href="/static/images/favicon/favicon.ico">
@@ -64,7 +67,7 @@
                         {% if current_user.role == 'admin' %}
                         <li class="nav-item">
                         <div id="AdashboardNav" class="nav-item-container" style=" border-radius: 10px;">
-                            <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                            <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/eye.png') }}" style="width: 50px; height:auto;" alt="Dashboard Icon">
                             <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Overview</a>
                         </div>
 
@@ -80,20 +83,20 @@
                           <li class="nav-item">
 
                           <div id="AteamNav" class="nav-item-container" style=" border-radius: 10px;">
-                            <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                            <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/teachingteam.png') }}" style="width: 50px; height:auto;" alt="Dashboard Icon">
                             <a class="nav-link" href="{{ url_for('admin.teaching_team') }}">Teaching team</a>
                           </div>
                         </li>
                          
                           <li class="nav-item">
                         <div id="AlogNav" class="nav-item-container" style=" border-radius: 10px;">
-                            <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                            <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/logs.png') }}" style="width: 50px; height:auto;" alt="Dashboard Icon">
                             <a class="nav-link" href="{{ url_for('admin.logs') }}">Logs</a>
                         </div>
 
                         <li class="nav-item">
                             <div id="AmodulesNav" class="nav-item-container" style=" border-radius: 10px;">
-                                <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                                <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/modules.png') }}" style="width: 50px; height:auto;" alt="Dashboard Icon">
                                 <a class="nav-link" href="{{ url_for('admin.view_modules') }}">Modules</a>
                             </div>
     
@@ -101,7 +104,7 @@
     
                         <li class="nav-item">
                             <div id="AquizzesNav" class="nav-item-container" style=" border-radius: 10px;">
-                                <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                                <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/quiz.png') }}" style="width: 50px; height:auto;" alt="Dashboard Icon">
                                 <a class="nav-link" href="{{ url_for('admin.quizzes') }}">Quiz pool</a>
                             </div>
     
@@ -113,21 +116,21 @@
                 
                     <li class="nav-item">
                     <div id="SclassroomNav" class="nav-item-container" style=" border-radius: 10px;">
-                        <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                        <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/classroom.png') }}" style="width: 50px; height:auto;" alt="Dashboard Icon">
                         <a class="nav-link" href="{{ url_for('staff.classroom') }}">Classrooms</a>
                     </div>
                 </li>
 
                 <li class="nav-item">
                     <div id="SmodulesNav"class="nav-item-container" style=" border-radius: 10px;">
-                            <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                        <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/modules.png') }}" style="width: 50px; height:auto;" alt="Dashboard Icon">
                             <a class="nav-link" href="{{ url_for('staff.view_modules') }}">Modules</a>
                     </div>
                 </li>
 
                     <li class="nav-item">
                     <div id="SquizzesNav" class="nav-item-container" style=" border-radius: 10px;">
-                        <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                        <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/quiz.png') }}" style="width: 50px; height:auto;" alt="Dashboard Icon">
                         <a class="nav-link" href="{{ url_for('staff.quizzes') }}">Quizzes</a>
                     </div>
                 </li>
@@ -138,7 +141,7 @@
                    
                     <li class="nav-item">
                         <div id="LogoutNav" class="nav-item-container">
-                            <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Logout Icon">
+                            <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/logout.png') }}" style="width: 50px; height:auto;" alt="Dashboard Icon">
                             <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
                         </div>
                     </li>
@@ -170,6 +173,27 @@
         </div>
             {% block content %}{% endblock %}
         </div>
+    
+    
+        <div id="sess-overlay" class="sess-overlay"></div>
+        <div id="reloginModal" class="sess-modal" style="display: none;">
+            <div class="sess-modal-content">
+                <h2>Your session is about to expire. To continue, please reauthenticate. Thank you.</h2>
+                <form id="reauthForm">
+                    <div>
+                        <label for="reauthEmail">Email address </label>
+                        <input type="email" id="reauthEmail" name="email" required autocomplete="off">
+                    </div>
+                    <div>
+                        <label for="reauthPassword">Password</label>
+                        <input type="password" id="reauthPassword" name="password" required>
+                    </div>
+                    <button type="submit">Re-login</button>
+                    <button type="button" id="logoutButton">Logout</button>
+                </form>
+            </div>
+        </div>
+     
 
 
     <!-- Bootstrap JavaScript library -->
@@ -179,6 +203,9 @@
     <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
     
     <script type="text/javascript" src="{{ url_for('static', filename='staff_admin.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='session_relogin.js') }}"></script>
+
 
 </body>
 

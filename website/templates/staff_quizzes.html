@@ -9,27 +9,23 @@
     <div class="roomDetailsCont">
 
     
-    {% for module_id, quizzes in quizzes_by_module.items() %}
-    <a style="text-decoration: none; " href="{{ url_for('staff.quizzes_by_module', module_id=module_id) }}">
-    <div class="classroomcard">
-   
-    <div class="classroomcardContent">
-        <h4  style="  color:#ffff70;">{{module_id}}. &nbsp;  {{ quizzes[0].title }}</h4> 
-        
-      </div>
-              
-    </div>
-    </a>
+      {% for module_id, quizzes in quizzes_by_module.items() %}
+      {% for quiz in quizzes %}
+          <!-- Ensure quiz.id is being referenced correctly -->
+          <a href="{{ url_for('staff.quizzes_by_module', module_id=module_id, quiz_id=quiz.id) }}" style="text-decoration: none;">
+              <div class="classroomcard">
+                  <div class="classroomcardContent">
+                      <h4 style="color: #ffff70;">{{ module_id }}. &nbsp; {{ quiz.title }}</h4>
+                  </div>
+              </div>
+          </a>
+      {% endfor %}
+  {% endfor %}
+</div>
     <style>
     #SquizzesNav{
       background-color: var(--color-snackbar-bg); 
       border-radius: 10px;
   }
 </style>
-       
-         
-      
-    {% endfor %}
-</div>
-
 {% endblock %}

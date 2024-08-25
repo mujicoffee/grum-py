@@ -8,10 +8,11 @@ from .otp import generate_otp
 from .emails import *
 from .reset_password_token import generate_reset_password_token
 from .recaptcha import verify_recaptcha
-from .encryption import encrypt_token, encrypt_message
+from .encryption import encrypt_token
 from .session import check_session, regenerate_session_token
 from .logs import log_user_activity
 from datetime import datetime, timedelta
+import logging
 import time
 import uuid
 import hashlib
@@ -95,94 +96,102 @@ def login():
             # Combine the password with the pepper
             combined_password = password + pepper
 
-            # Check if the user exists and the password is correct
-            if bcrypt.check_password_hash(user.password, combined_password):
-                # Clear any existing session data
-                session.clear()
-                # Generate an OTP
-                otp = generate_otp()
-                # Hash the OTP 
-                hashed_otp = bcrypt.generate_password_hash(str(otp)).decode('utf-8')
-                # Store the user's OTP in the database
-                user.otp = hashed_otp
-                user.last_otp_time = current_time
-                # Reset the login attempts to 0 and update to the latest login time
-                user.login_attempts = 0
-                user.last_login_time = current_time
-                session['failed_login_details'] = []
+            try:
+                # Check if the user exists and the password is correct
+                if bcrypt.check_password_hash(user.password, combined_password):
+                    # Clear any existing session data
+                    session.clear()
+                    # Generate an OTP
+                    otp = generate_otp()
+                    # Hash the OTP 
+                    hashed_otp = bcrypt.generate_password_hash(str(otp)).decode('utf-8')
+                    # Store the user's OTP in the database
+                    user.otp = hashed_otp
+                    user.last_otp_time = current_time
+                    # Reset the login attempts to 0 and update to the latest login time
+                    user.login_attempts = 0
+                    user.last_login_time = current_time
+                    session['failed_login_details'] = []
 
-                # Generate a new session token
-                session_token = str(uuid.uuid4())
-                # Encrypt the session token
-                iv, encrypted_session_token, tag = encrypt_token(session_token)
-                # Store the encrypted token in the database
-                user.session_token = f"{iv}:{encrypted_session_token}:{tag}"
-                session['session_token'] = f"{iv}:{encrypted_session_token}:{tag}"
+                    # Generate a new session token
+                    session_token = str(uuid.uuid4())
+                    # Encrypt the session token
+                    iv, encrypted_session_token, tag = encrypt_token(session_token)
+                    # Store the encrypted token in the database
+                    user.session_token = f"{iv}:{encrypted_session_token}:{tag}"
+                    session['session_token'] = f"{iv}:{encrypted_session_token}:{tag}"
 
-                db.session.commit()
-                # Send the OTP to the user's email
-                send_otp_email(user.name, email, otp)
-                flash('An OTP has been sent to your email.', category='info')
-                # Store the email in the session
-                session['email'] = email
-
-                # Log successful login
-                log_user_activity(user.id, 'pass', 'Login', 'Login successful. OTP sent.')
-
-                return redirect(url_for('auth.verify_otp'))
-            else:
-                # Increment the login attempts
-                user.login_attempts += 1
-                user.last_login_time = current_time
-                # Add the current time to the failed login attempts 
-                failed_attempts_details.append(current_time.strftime('%d/%m/%Y %H:%M:%S'))
-                
-                # Limit and retrieve the latest 5 failed login attempts
-                if len(failed_attempts_details) > 5:
-                    failed_attempts_details = failed_attempts_details[-5:]
-
-                # Update the session with the failed login attempts
-                session['failed_login_details'] = failed_attempts_details
-                db.session.commit()
-
-                # Check if the user has 5 failed login attempts
-                if user.login_attempts == 5:
-                    # Send a suspicious login email
-                    send_suspicious_login_email(user.name, email, failed_attempts_details)
-                    # Calculate the remaining lockout time
-                    timeout = timedelta(minutes=10)
-                    minutes, seconds = divmod(timeout.total_seconds(), 60)
-                    flash(f'Too many login attempts. Please try again in {int(minutes)} minutes {int(seconds)} seconds.', category='danger')
-                    log_user_activity(user.id, 'fail', 'Login', '5 failed login attempts. Lockout in effect.')
-                    return render_template('login.html', form=form)
-
-                # Check if the user has 10 failed login attempts
-                if user.login_attempts >= 10:
-                    # Deactivate the account
-                    user.is_active = 'No'
                     db.session.commit()
-                    # Send an account deactivation email
-                    send_account_deactivation_email(user.name, email)
-                    flash('Your account has been deactivated. Please check your email for more details.', category='danger')
-                    log_user_activity(user.id, 'fail', 'Login', '10 failed login attempts. Account deactivated.')
-                    return render_template('login.html', form=form)
+                    # Send the OTP to the user's email
+                    send_otp_email(user.name, email, otp)
+                    flash('An OTP has been sent to your email.', category='info')
+                    # Store the email in the session
+                    session['email'] = email
 
-                # If the user has fewer than 10 failed login attempts, show the appropriate message
-                attempts = user.login_attempts
-                if attempts < 5:
-                    # Calculate remaining attempts until account lockout
-                    attempts_left = 5 - attempts
-                    flash(f'The email or password you have provided is incorrect. Please try again. You have {attempts_left} tries left before your account gets locked.', category='danger')
+                    # Log successful login
+                    log_user_activity(user.id, 'pass', 'Login', 'Login successful. OTP sent.')
+
+                    return redirect(url_for('auth.verify_otp'))
                 else:
-                     # Calculate remaining attempts until account deactivation
-                    attempts_left = 10 - attempts
-                    flash(f'The email or password you have provided is incorrect. Please try again. You have {attempts_left} tries left before your account gets deactivated.', category='danger')
+                    # Increment the login attempts
+                    user.login_attempts += 1
+                    user.last_login_time = current_time
+                    # Add the current time to the failed login attempts 
+                    failed_attempts_details.append(current_time.strftime('%d/%m/%Y %H:%M:%S'))
+                    
+                    # Limit and retrieve the latest 5 failed login attempts
+                    if len(failed_attempts_details) > 5:
+                        failed_attempts_details = failed_attempts_details[-5:]
 
-                # Log failed login attempt
-                log_user_activity(user.id, 'fail', 'Login', 'Incorrect email or password.')
+                    # Update the session with the failed login attempts
+                    session['failed_login_details'] = failed_attempts_details
+                    db.session.commit()
+
+                    # Check if the user has 5 failed login attempts
+                    if user.login_attempts == 5:
+                        # Send a suspicious login email
+                        send_suspicious_login_email(user.name, email, failed_attempts_details)
+                        # Calculate the remaining lockout time
+                        timeout = timedelta(minutes=10)
+                        minutes, seconds = divmod(timeout.total_seconds(), 60)
+                        flash(f'Too many login attempts. Please try again in {int(minutes)} minutes {int(seconds)} seconds.', category='danger')
+                        log_user_activity(user.id, 'fail', 'Login', '5 failed login attempts. Lockout in effect.')
+                        return render_template('login.html', form=form)
+
+                    # Check if the user has 10 failed login attempts
+                    if user.login_attempts >= 10:
+                        # Deactivate the account
+                        user.is_active = 'No'
+                        db.session.commit()
+                        # Send an account deactivation email
+                        send_account_deactivation_email(user.name, email)
+                        flash('Your account has been deactivated. Please check your email for more details.', category='danger')
+                        log_user_activity(user.id, 'fail', 'Login', '10 failed login attempts. Account deactivated.')
+                        return render_template('login.html', form=form)
+
+                    # If the user has fewer than 10 failed login attempts, show the appropriate message
+                    attempts = user.login_attempts
+                    if attempts < 5:
+                        # Calculate remaining attempts until account lockout
+                        attempts_left = 5 - attempts
+                        flash(f'The email or password you have provided is incorrect. Please try again. You have {attempts_left} tries left before your account gets locked.', category='danger')
+                    else:
+                        # Calculate remaining attempts until account deactivation
+                        attempts_left = 10 - attempts
+                        flash(f'The email or password you have provided is incorrect. Please try again. You have {attempts_left} tries left before your account gets deactivated.', category='danger')
+
+                    # Log failed login attempt
+                    log_user_activity(user.id, 'fail', 'Login', 'Incorrect email or password.')
+
+            except ValueError as e:
+                # Handle the ValueError that might occur due to invalid salt
+                flash('There was an error processing your request. Please try again.', category='danger')
+                log_user_activity(user.id if user else 'unknown', 'fail', 'Login', f'Error: {str(e)}')
+                # Optionally, you can redirect to a generic error page or re-render the login page
+                return render_template('login.html', form=form)
+
         else:
             flash('The email or password you have provided is incorrect. Please try again.', category='danger')
-
 
     # Create a response object
     response = make_response(render_template('login.html', form=form))
@@ -657,12 +666,6 @@ def change_password():
 
 @auth.route('/forget-password', methods=['GET', 'POST'])
 def forget_password():
-    if current_user.is_authenticated:
-        # Check whether user is logged in
-        redirect_response = check_session()
-        if redirect_response:
-            return redirect_response
-
     # Initialise the forget password form
     form = ForgetPasswordForm()
 
@@ -741,16 +744,11 @@ def forget_password():
 
 @auth.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
-    if current_user.is_authenticated:
-        # Check whether user is logged in
-        redirect_response = check_session()
-        if redirect_response:
-            return redirect_response
-
     # Load the pepper value from the config
     pepper = app.config.get('PEPPER', '')
 
-    # Hash the token using SHA-256
+    # Initialise the reset password form
+    form = ResetPasswordForm()
     hashed_token = hashlib.sha256(token.encode('utf-8')).hexdigest()
 
     # Query the database for a user with the given reset password token
@@ -770,74 +768,87 @@ def reset_password(token):
         if user.last_password_change and (datetime.now() - user.last_password_change < timedelta(days=1)):
             user.reset_password_token = None
             db.session.commit()
+            # Calculate the timestamp for when the password reset will be available again
             available_reset_time = user.last_password_change + timedelta(days=1)
             send_reset_password_suspension_email(user.email, user.name, available_reset_time)
             log_user_activity(user.id, 'fail', 'Reset Password', 'Password change attempted too soon.')
             flash('You can only change your password once every 24 hours. Please try again later.', category='danger')
             return redirect(url_for('auth.login'))
 
-        # Initialise the reset password form
-        form = ResetPasswordForm()
-
         # Validate the form submission
         if form.validate_on_submit():
+            # Retrieve the new and confirm password from the form
             newPassword = form.newPassword.data
             confirmPassword = form.confirmPassword.data
-
+            
             # Extract substrings from the email for validation
             email_substrings = extract_substrings(user.email.split('@')[0])  # Username part only
 
-            # Check if the password meets the criteria
+            # Check if the password has 12 or more characters
             if len(newPassword) < 12:
                 flash('New password must be at least 12 characters long.', category='danger')
                 log_user_activity(user.id, 'fail', 'Reset Password', 'New password too short.')
+            # Check if the password has at least 1 uppercase letter
             elif not re.search(r'[A-Z]', newPassword):
                 flash('New password must contain at least one uppercase letter.', category='danger')
                 log_user_activity(user.id, 'fail', 'Reset Password', 'New password missing uppercase letter.')
+            # Check if the password has at least 1 lowercase letter
             elif not re.search(r'[a-z]', newPassword):
-                flash('New password must contain at least one lowercase letter.', category='danger')
                 log_user_activity(user.id, 'fail', 'Reset Password', 'New password missing lowercase letter.')
+                flash('New password must contain at least one lowercase letter.', category='danger')
+            # Check if the password has at least 1 number
             elif not re.search(r'[0-9]', newPassword):
-                flash('New password must contain at least one number.', category='danger')
                 log_user_activity(user.id, 'fail', 'Reset Password', 'New password missing number.')
+                flash('New password must contain at least one number.', category='danger')
+            # Check if the password has at least 1 special character
             elif not re.search(r'[!@#$%^&*()]', newPassword):
-                flash('New password must contain at least one special character.', category='danger')
-                log_user_activity(user.id, 'fail', 'Reset Password', 'New password missing special character.')
+                log_user_activity(user.id, 'fail', 'Reset Password', 'New password missing special character.') 
+                flash('New password must contain at least one special character.', category='danger') 
+            # Check if both passwords match
             elif newPassword != confirmPassword:
-                flash('Passwords don\'t match.', category='danger')
                 log_user_activity(user.id, 'fail', 'Reset Password', 'Passwords do not match.')
+                flash('Passwords don\'t match.', category='danger')
+            # Check if the new password is the same as the existing password 
             elif bcrypt.check_password_hash(user.password, newPassword):
-                flash('New password cannot be the same as the current password.', category='danger')
                 log_user_activity(user.id, 'fail', 'Reset Password', 'New password same as current password.')
+                flash('New password cannot be the same as the current password.', category='danger')
             elif any(sub in newPassword.lower() for sub in email_substrings):
                 flash('New password cannot contain parts of your email address.', category='danger')
-                log_user_activity(user.id, 'fail', 'Reset Password', 'New password contains parts of email address.')
+                
             else:
                 password_history = json.loads(user.password_history or '[]')
                 if any(bcrypt.check_password_hash(pw, newPassword) for pw in password_history):
                     flash('New password cannot be the same as any of the last used passwords.', category='danger')
                 else:
                     password_history.append(user.password)  # Add the old password to history
+                
+                # Hash the new password                    
                     if len(password_history) > 15:
                         password_history.pop(0)  # Maintain a maximum of 15 passwords
+
                     user.password_history = json.dumps(password_history)   
-                    
-                    # Hash the new password
                     hashed_password = bcrypt.generate_password_hash(newPassword + pepper).decode('utf-8')
+                    # Update the user's password in the database
                     user.password = hashed_password
                     user.reset_password_token = None
+                    # Update the last reset password time
                     user.last_reset_password_time = datetime.now()
+                    # Update the last password  time
                     user.last_password_change = datetime.now()
+                    # Reset the forget password attempts after successful password reset
                     user.forget_password_attempts = 0
+
+                    # Deactivated accounts only
+                    # Reset the login attempts and account status for reactivation
                     user.login_attempts = 0
                     user.is_active = 'Yes'
                     db.session.commit()
 
-                    # Send the reset password confirmation email to the user
-                    send_reset_password_email(user.name, user.email)
-                    log_user_activity(user.id, 'pass', 'Reset Password', 'Password reset successfully.')
-                    flash('Password reset successfully, you may login with the new password.', category='success')
-                    return redirect(url_for('auth.login'))
+                # Send the reset password confirmation email to the user
+                send_reset_password_email(user.name, user.email)
+                log_user_activity(user.id, 'pass', 'Reset Password', 'Password reset successfully.')
+                flash('Password reset successfully, you may login with the new password.', category='success')
+                return redirect(url_for('auth.login'))
 
     else:
         flash('Invalid or expired reset link.', category='danger')
@@ -853,7 +864,7 @@ def reset_password(token):
     
     return response
 
-@auth.route('/logout')
+@auth.route('/logout', methods=['POST', 'GET'])
 @login_required
 def logout():
     # Clear the user's session token
@@ -872,9 +883,17 @@ def logout():
     # Log the successful logout event
     log_user_activity(user.id, 'pass', 'Logout', 'User logged out successfully.')
 
+    # Check if the request is expecting a JSON response
+    if request.method == 'POST' and request.is_json:
+        response = {
+            'message': 'Logout successful!',
+            'status': 'success'
+        }
+        return jsonify(response)
+    
+    # Handle the redirect for GET requests or non-JSON POST requests
     flash('Logout successful!', category='success')
     
-    # Create a response object
     response = make_response(redirect(url_for('auth.login')))
     
     # Set cache-control headers
@@ -942,35 +961,60 @@ def sign_up():
 
 @auth.route('/reauthenticate', methods=['POST'])
 def reauthenticate():
-    if current_user.is_authenticated:
-        data = request.get_json()
-        password = data.get('password')
+    try:
+        data = request.form
+        if 'email' not in data or 'password' not in data:
+            return jsonify({'message': 'Email or password is missing. Please try again.'}), 400
 
-        # Validate password
-        if bcrypt.check_password_hash(current_user.password, password):
-            session['last_activity'] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-            session_token = str(uuid.uuid4())
-            iv, encrypted_session_token = encrypt_message(session_token)
-            current_user.session_token = encrypted_session_token
-            session['iv'] = iv
-            session['session_token'] = encrypted_session_token
-            db.session.commit()
-            return jsonify({'status': 'success', 'message': 'Session reauthenticated successfully.'})
+        email = data['email'].strip().lower()
+        password = data['password'].strip()
+        pepper = app.config.get('PEPPER', '')
+
+        # Ensure the user is logged in by checking the session
+        if 'session_token' not in session:
+            return jsonify({'status': 'error', 'message': 'User not logged in.'}), 401
+
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            combined_password = password + pepper
+            if bcrypt.check_password_hash(user.password, combined_password):
+                session_token = str(uuid.uuid4())
+                iv, encrypted_session_token, tag = encrypt_token(session_token)
+
+                user.session_token = f"{iv}:{encrypted_session_token}:{tag}"
+                db.session.commit()
+
+                session['session_token'] = f"{iv}:{encrypted_session_token}:{tag}"
+                session['last_activity'] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+
+                # Update session to indicate successful reauthentication
+                session['reauthenticate'] = False
+
+                return jsonify({'status': 'success', 'message': 'Session reauthenticated successfully.'})
+            else:
+                # Handle incorrect password
+                flash('Incorrect password. Please try again.', 'danger')
+                return jsonify({'status': 'error', 'message': 'Incorrect password. Please try again.'}), 401
         else:
-            return jsonify({'status': 'error', 'message': 'Invalid password. Please try again.'}), 401
-    return jsonify({'status': 'error', 'message': 'User not authenticated.'}), 401
+            # Handle user not found
+            flash('User not found. Please try again.', 'danger')
+            return jsonify({'status': 'error', 'message': 'User not found. Please try again.'}), 401
 
-@auth.route('/session-status')
-@login_required
-def session_status():
-    last_activity = session.get('last_activity')
-    if last_activity:
-        last_activity_time = datetime.strptime(last_activity, '%d/%m/%Y %H:%M:%S')
-        time_difference = datetime.now() - last_activity_time
+    except Exception as e:
+        logging.error(f'An unexpected error occurred: {str(e)}')
+        return jsonify({'status': 'error', 'message': 'An unexpected error occurred. Please try again later.'}), 500
 
-        if time_difference > timedelta(minutes=2):
-            return jsonify({'status': 'expired'}), 200
-        else:
-            return jsonify({'status': 'active'}), 200
-    else:
-        return jsonify({'status': 'expired'}), 200
+
+@auth.route('/check_reauthenticate', methods=['GET'])
+def check_reauthenticate():
+    # Check if the user is authenticated
+    if not current_user.is_authenticated:
+        # User is not authenticated; prompt reauthentication
+        return jsonify({"status": "expired", "message": "Your session has expired, please log in again."}), 401
+    
+    # Check if reauthentication is required
+    if session.get('reauthenticate', False):
+        return jsonify({"reauthenticate": True})
+    
+    return jsonify({"reauthenticate": False})

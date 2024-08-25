@@ -56,7 +56,7 @@
         <label class="input" style="margin-bottom: 10px;">
           {{ form.password(class="input__field", id="password", placeholder="", autocomplete="off") }}
           <span class="input__label">Password</span>
-          <img id="eye" src="{{ url_for('static', filename='images/extras/eye.png') }}" alt="Toggle Password Visibility">
+          <img id="eye" src="{{ url_for('static', filename='images/extras/closedeye.gif') }}" alt="Toggle Password Visibility">
         </label>
 
         <a href="{{ url_for('auth.forget_password') }}" class="forgetpassword">Forgot your Password?</a>

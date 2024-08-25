@@ -3,28 +3,40 @@ from flask import session, redirect, url_for, flash
 from flask_login import current_user
 from datetime import datetime, timedelta
 from .models import User
-from .encryption import encrypt_token, decrypt_token
+from .encryption import encrypt_token
 from . import db
 import uuid
 
 def session_timeout(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        now = datetime.now()
+
         last_activity = session.get('last_activity')
         if last_activity:
             last_activity_time = datetime.strptime(last_activity, '%d/%m/%Y %H:%M:%S')
 
-            user = User.query.filter_by(email=current_user.email).first()
-
-            if datetime.now() - last_activity_time > timedelta(minutes=30):
-                user.session_token = None
+            # If idle time is more than 2 minutes, log out the user and show a message
+            if now - last_activity_time > timedelta(minutes=2):
+                # Clear session token and other session data
+                if 'session_token' in session:
+                    session.pop('session_token')
+                User.query.filter_by(email=current_user.email).update({'session_token': None})
                 db.session.commit()
                 session.clear()
+                
+                # Flash a message and redirect to login
+                flash("Your session has expired, please log in again.", 'warning')
                 return redirect(url_for('auth.login'))
             
-        session['last_activity'] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            # If idle time is more than 1 minute but less than 5 minutes, prompt reauthentication
+            elif timedelta(minutes=1) < now - last_activity_time <= timedelta(minutes=60):
+                session['reauthenticate'] = True
+
+        # Reset last activity time
+        session['last_activity'] = now.strftime('%d/%m/%Y %H:%M:%S')
         return f(*args, **kwargs)
-    
+
     return decorated_function
 
 def check_session():

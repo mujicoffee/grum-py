@@ -294,8 +294,8 @@ body.loginPage {
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  width: 30px; /* Adjust size as needed */
-  height: 30px; /* Adjust size as needed */
+  width: 60px; /* Adjust size as needed */
+  height: auto;
 }
 
 
@@ -2605,69 +2605,77 @@ th:hover .resizer {
   border: none;
 }
 
-.sessmodal {
+.sess-overlay {
   position: fixed;
   top: 0;
-  left: 45%;
+  left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: none;
-  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  z-index: 999; /* Ensure it's above other content */
+  display: none; /* Hidden by default */
+}
+
+
+.sess-modal {
+  display: flex;
   align-items: center;
-
-}
-
-.sessmodal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 15px; /* Adjusted for more rounded corners */
-  width: 90%; /* Make sure it's responsive */
-  max-width: 500px; /* Adjusted for a wider rectangular shape */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  box-sizing: border-box; /* Ensures padding is included in the width calculation */
-}
-
-.sessmodal-content h2 {
-  margin: 0 0 15px;
-  font-size: 1.5em;
-}
-
-.sessmodal-content p {
-  margin: 0 0 20px;
-}
-
-input[type="sesspassword"] {
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  padding: 10px;
-  margin: 0 0 20px;
+  height: 100%;
+  z-index: 1000; /* Ensure it's above the overlay */
+}
+
+.sess-modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px; /* Adjust width as needed */
+  height: auto; /* Long rectangle */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sess-modal-content h2 {
+  margin-bottom: 20px;
+}
+
+.sess-modal-content form {
+  display: flex;
+  flex-direction: column;
+}
+
+.sess-modal-content form div {
+  margin-bottom: 15px;
+}
+
+.sess-modal-content form label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.sess-modal-content form input {
+  padding: 8px;
+  border: 1px solid #ccc;
   border-radius: 5px;
-  border: 1px solid #ddd;
-  box-sizing: border-box; /* Ensures padding is included in the width calculation */
 }
 
+.sess-modal-content form button {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  margin-top: 10px;
+  cursor: pointer;
+}
 
-
-.sessbtn-primary {
-  background-color: #007bff;
+.sess-modal-content form button[type="submit"] {
+  background-color: #4CAF50;
   color: white;
 }
 
-.sessbtn-primary:hover {
-  background-color: #0056b3;
-}
-
-.sessbtn-secondary {
-  background-color: #6c757d;
+.sess-modal-content form button#logoutButton {
+  background-color: #f44336;
   color: white;
-}
-
-.sessbtn-secondary:hover {
-  background-color: #5a6268;
-}
-
-#sessionMessage {
-  margin-top: 15px;
-  font-size: 0.9em;
 }

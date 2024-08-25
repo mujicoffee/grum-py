@@ -249,7 +249,7 @@ def activate_all():
 def teaching_team():
     if current_user.role != 'admin':
         flash("Unauthorised access", category='danger')
-        return redirect(url_for('staff.dashboard') if current_user.role == 'staff' else url_for('student.dashboard'))
+        return redirect(url_for('staff.classroom') if current_user.role == 'staff' else url_for('student.dashboard'))
 
     current_week, _ = get_current_week_and_time()
     search_query = request.args.get('query', '').strip()
@@ -290,7 +290,7 @@ def teaching_team():
 def add_staff():
     if current_user.role != 'admin':
         flash("Unauthorised access", category='danger')
-        return redirect(url_for('staff.dashboard') if current_user.role == 'staff' else url_for('student.dashboard'))
+        return redirect(url_for('staff.classroom') if current_user.role == 'staff' else url_for('student.dashboard'))
     
     current_week,_ =get_current_week_and_time()
     form_staff_file = AddStaffFileForm()
@@ -440,7 +440,7 @@ def add_staff():
 def edit_staff(staff_id):
     if current_user.role != 'admin':
         flash("Unauthorised access", category='danger')
-        return redirect(url_for('staff.dashboard') if current_user.role == 'staff' else url_for('student.dashboard'))
+        return redirect(url_for('staff.classroom') if current_user.role == 'staff' else url_for('student.dashboard'))
     
     current_week,_ = get_current_week_and_time()
     staff = User.query.get(staff_id)
@@ -478,7 +478,7 @@ def edit_staff(staff_id):
 def remove_staff(staff_id):
     if current_user.role != 'admin':
         flash("Unauthorised access", category='danger')
-        return redirect(url_for('staff.dashboard') if current_user.role == 'staff' else url_for('student.dashboard'))
+        return redirect(url_for('staff.classroom') if current_user.role == 'staff' else url_for('student.dashboard'))
 
     staff = User.query.get(staff_id)
     if not staff:
@@ -503,7 +503,7 @@ def remove_staff(staff_id):
 def logs():
     if current_user.role != 'admin':
         flash("Unauthorised access", category='danger')
-        return redirect(url_for('staff.dashboard') if current_user.role == 'staff' else url_for('student.dashboard'))
+        return redirect(url_for('staff.classroom') if current_user.role == 'staff' else url_for('student.dashboard'))
     current_week,_ = get_current_week_and_time()
     logs = Logs.query.order_by(Logs.timestamp.desc()).all()
     return render_template('logs.html', user=current_user, logs=logs, current_week=current_week)
@@ -516,7 +516,7 @@ def logs():
 def quizzes():
     if current_user.role != 'admin':
         flash("Unauthorised access", category='danger')
-        return redirect(url_for('staff.dashboard') if current_user.role == 'staff' else url_for('student.dashboard'))
+        return redirect(url_for('staff.classroom') if current_user.role == 'staff' else url_for('student.dashboard'))
 
     current_week,_=  get_current_week_and_time()
     quizzes = Quiz.query.all()
@@ -536,8 +536,13 @@ def quizzes():
 def quizzes_by_module(module_id, quiz_id):
     if current_user.role != 'admin':
         flash("Unauthorized access", category='danger')
-        return redirect(url_for('staff.dashboard') if current_user.role == 'staff' else url_for('student.dashboard'))
-
+        return redirect(url_for('staff.classroom') if current_user.role == 'staff' else url_for('student.dashboard'))
+   
+    module_exists = Quiz.query.filter_by(module_id=module_id).first()
+    if not module_exists:
+        flash("Module not found.", category='danger')
+        return redirect(url_for('student.dashboard'))
+        
     current_week, _ = get_current_week_and_time()
 
     # Pagination for quizzes
@@ -679,7 +684,7 @@ def add_quiz(module_id, quiz_id):
 def edit_question(question_id):
     if current_user.role != 'admin':
         flash("Unauthorised access", category='danger')
-        return redirect(url_for('staff.dashboard') if current_user.role == 'staff' else url_for('student.dashboard'))
+        return redirect(url_for('staff.classroom') if current_user.role == 'staff' else url_for('student.dashboard'))
 
     current_week,_=  get_current_week_and_time()
     question = QuizQuestion.query.get_or_404(question_id)
@@ -705,7 +710,7 @@ def edit_question(question_id):
 def delete_question(question_id):
     if current_user.role != 'admin':
         flash("Unauthorised access", category='danger')
-        return redirect(url_for('staff.dashboard') if current_user.role == 'staff' else url_for('student.dashboard'))
+        return redirect(url_for('staff.classroom') if current_user.role == 'staff' else url_for('student.dashboard'))
 
 
     form = DeleteQuestionForm()

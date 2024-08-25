@@ -62,7 +62,7 @@ def classroom_details(code):
     
     if current_user.role != 'staff':
         flash("Unauthorised access.", category='danger')
-        return redirect(url_for('student.dashboard'))
+        return redirect(url_for('admin.dashboard') if current_user.role == 'admin' else url_for('student.dashboard'))
     
     classroom = Classroom.query.filter_by(code=code).first_or_404()
 
@@ -109,7 +109,7 @@ def classroom_details(code):
 def search_students(code):
     if current_user.role != 'staff':
         flash("Unauthorised access.", category='danger')
-        return redirect(url_for('student.dashboard'))
+        return redirect(url_for('admin.dashboard') if current_user.role == 'admin' else url_for('student.dashboard'))
 
     classroom = Classroom.query.filter_by(code=code).first_or_404()
     stmt = select(staff_classroom.c.classroom_id).where(staff_classroom.c.staff_id == current_user.id)
@@ -166,7 +166,7 @@ def add_students(code):
     # Check if the current user is staff
     if current_user.role != 'staff':
         flash("Unauthorised access.", category='danger')
-        return redirect(url_for('student.dashboard'))
+        return redirect(url_for('admin.dashboard') if current_user.role == 'admin' else url_for('student.dashboard'))
 
     # Retrieve the classroom details by code (e.g. P01)
     classroom = Classroom.query.filter_by(code=code).first_or_404()
@@ -318,7 +318,7 @@ def remove_student(code, student_id):
     # Check if the current user is staff
     if current_user.role != 'staff':
         flash("Unauthorized access.", category='danger')
-        return redirect(url_for('student.dashboard'))
+        return redirect(url_for('admin.dashboard') if current_user.role == 'admin' else url_for('student.dashboard'))
 
     # Retrieve the classroom details by code (e.g. P01)
     classroom = Classroom.query.filter_by(code=code).first_or_404()
@@ -352,7 +352,7 @@ def remove_student(code, student_id):
 def view_modules():
     if current_user.role != 'staff':
         flash("Unauthorized access.", category='danger')
-        return redirect(url_for('student.dashboard'))
+        return redirect(url_for('admin.dashboard') if current_user.role == 'admin' else url_for('student.dashboard'))
     
     current_week,_=  get_current_week_and_time()
     modules = Module.query.all()
@@ -367,7 +367,7 @@ def view_modules():
 def view_labsheets(module_id):
     if current_user.role != 'staff':
         flash("Unauthorized access.", category='danger')
-        return redirect(url_for('student.dashboard'))
+        return redirect(url_for('admin.dashboard') if current_user.role == 'admin' else url_for('student.dashboard'))
     
     current_week,_=  get_current_week_and_time()
     module = Module.query.get_or_404(module_id)
@@ -388,7 +388,7 @@ def view_labsheets(module_id):
 def view_labsheet_questions(labsheet_id):
     if current_user.role != 'staff':
         flash("Unauthorized access.", category='danger')
-        return redirect(url_for('student.dashboard'))
+        return redirect(url_for('admin.dashboard') if current_user.role == 'admin' else url_for('student.dashboard'))
 
     current_week, _ = get_current_week_and_time()
     labsheet = Labsheet.query.get_or_404(labsheet_id)
@@ -413,7 +413,7 @@ def view_labsheet_questions(labsheet_id):
 def quizzes():
     if current_user.role != 'staff':
         flash("Unauthorised access.", category='danger')
-        return redirect(url_for('student.dashboard'))
+        return redirect(url_for('admin.dashboard') if current_user.role == 'admin' else url_for('student.dashboard'))
     current_week, _ = get_current_week_and_time()
     quizzes = Quiz.query.all()
     quizzes_by_module = {}
@@ -426,56 +426,54 @@ def quizzes():
     
     return render_template("staff_quizzes.html", user=current_user, quizzes_by_module=quizzes_by_module, current_week=current_week)
 
-@staff.route('/quizzes/module/<int:module_id>', methods=['GET'])
+@staff.route('/quizzes/module/<int:module_id>/quiz/<int:quiz_id>', methods=['GET'])
 @login_required
 @session_timeout
-def quizzes_by_module(module_id):
+def quizzes_by_module(module_id, quiz_id):
     if current_user.role != 'staff':
         flash("Unauthorized access.", category='danger')
-        return redirect(url_for('student.dashboard'))
+        return redirect(url_for('admin.dashboard') if current_user.role == 'admin' else url_for('student.dashboard'))
 
     # Check if the module_id exists
     module_exists = Quiz.query.filter_by(module_id=module_id).first()
     if not module_exists:
         flash("Module not found.", category='danger')
-        return redirect(url_for('student.dashboard'))
+        return redirect(url_for('staff.quizzes'))
     
     quizzes = Quiz.query.filter_by(module_id=module_id).all()
     titles = [quiz.title for quiz in quizzes]
+    
     # Pagination for quizzes
     page = request.args.get('page', 1, type=int)
     per_page = 5
     quizzes_pagination = Quiz.query.filter_by(module_id=module_id).paginate(page=page, per_page=per_page, error_out=False)
+    
     current_week, _ = get_current_week_and_time()
+    
     # Handle quiz_id and search term
-    quiz_id = request.args.get('quiz_id', None, type=int)
     search_term = request.args.get('search', '', type=str)
     questions_page = request.args.get('questions_page', 1, type=int)
     questions_per_page = 10
+
     quiz_questions_pagination = None
 
     if quiz_id:
         # Check if the quiz_id is valid for the given module_id
-        valid_quiz = Quiz.query.filter_by(id=quiz_id, module_id=module_id).first()
-        if not valid_quiz:
-           
-            first_quiz = Quiz.query.filter_by(module_id=module_id).first()
-            if first_quiz:
-                return redirect(url_for('staff.quizzes_by_module', module_id=module_id, quiz_id=first_quiz.id))
-            else:
-                return redirect(url_for('staff.quizzes_by_module', module_id=module_id))
-        else:
-            # Pagination for questions if quiz_id is valid
-            query = QuizQuestion.query.filter_by(quiz_id=quiz_id)
-            if search_term:
-                query = query.filter(QuizQuestion.question.ilike(f'%{search_term}%'))
-            quiz_questions_pagination = query.paginate(page=questions_page, per_page=questions_per_page, error_out=False)
+        quiz = Quiz.query.filter_by(id=quiz_id, module_id=module_id).first()
+        if not quiz:
+            flash("Invalid quiz ID.", category='danger')
+            return redirect(url_for('staff.quizzes'))
+
+        # Filter questions based on quiz_id and search term
+        query = QuizQuestion.query.filter_by(quiz_id=quiz_id)
+        if search_term:
+            query = query.filter(QuizQuestion.question.ilike(f'%{search_term}%'))
+        quiz_questions_pagination = query.paginate(page=questions_page, per_page=questions_per_page, error_out=False)
+    
     else:
-        first_quiz = Quiz.query.filter_by(module_id=module_id).first()
-        if first_quiz:
-            return redirect(url_for('staff.quizzes_by_module', module_id=module_id, quiz_id=first_quiz.id))
-        else:
-            quiz_id = None
+        # If no quiz_id is provided, redirect to quizzes list or handle accordingly
+        flash("No quiz ID provided.", category='danger')
+        return redirect(url_for('staff.quizzes'))
 
     return render_template(
         "questions_in_quizzes.html",
@@ -486,5 +484,5 @@ def quizzes_by_module(module_id):
         quizzes_pagination=quizzes_pagination,
         quiz_id=quiz_id,
         quiz_questions_pagination=quiz_questions_pagination,
-        search_term=search_term
+        search_query=search_term  # Correct variable name in the template
     )

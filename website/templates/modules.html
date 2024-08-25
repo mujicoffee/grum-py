@@ -16,38 +16,37 @@
         <ul class="navbarList">
             <li class="nav-item">
                 <div id="dashboardNav" class="nav-item-container" >
-                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Dashboard Icon">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/dashboard.png') }}"  style="width: 50px; height:auto; " alt="Dashboard Icon">
                     <a class="nav-link" href="{{ url_for('student.dashboard') }}">Dashboard</a>
                 </div>
             </li>
             <li class="nav-item">
                 <div id="rankingNav" class="nav-item-container">
-                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Ranking Icon">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/ranking.png') }}"  style="width: 50px; height:auto; " alt="Ranking Icon">
                     <a class="nav-link" href="{{ url_for('student.rankings') }}">Ranking</a>
                 </div>
             </li>
             <li class="nav-item">
-                <div id="modulesNav" class="nav-item-container" style="background-color: var(--color-snackbar-bg); border-radius: 10px;" alt="Modules Icon">
-                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}">
+                <div id="modulesNav" class="nav-item-container" style="background-color: var(--color-snackbar-bg); border-radius: 10px;">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/modules.png') }}"  style="width: 50px; height:auto; " alt="Modules Icon">
                     <a class="nav-link" href="{{ url_for('student.modules') }}">Modules</a>
                 </div>
             </li>
             <li class="nav-item">
-                <div id="QuizNav" class="nav-item-container">
-                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Quiz Icon">
+                <div id="QuizNav" class="nav-item-container" >
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/quiz.png') }}"  style="width: 50px; height:auto; " alt="Quiz Icon">
                     <a class="nav-link" href="{{ url_for('student.displayQuiz') }}">Quiz</a>
                 </div>
             </li>
             <li class="nav-item">
                 <div id="LogoutNav" class="nav-item-container">
-                    <img class="nav-icon" src="{{ url_for('static', filename='images/icons8/classroom.png') }}" alt="Logout Icon">
+                    <img class="nav-icon" src="{{ url_for('static', filename='images/navbar/logout.png') }}"  style="width: 50px; height:auto; " alt="Logout Icon">
                     <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
                 </div>
             </li>
         </ul>
     </div>
 </nav>
-
 
 <div class="accordion" id="accordionModules">
     {% for module in modules_data %}
