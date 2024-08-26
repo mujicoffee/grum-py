@@ -41,7 +41,7 @@
 
     <img id="quizstartBG" src="{{ url_for('static', filename='images/bg/quizzesBG.png') }}" alt="Background Image">
 
-    <nav class="navbar">
+    <nav class="navbar" id="navbartransition">
         <div class="navbarContent">
             <div class="LogoAndText">
                 <img class="navbarLogo" src="{{ url_for('static', filename='images/logo/grumPY.png') }}" alt="Logo">
@@ -368,7 +368,7 @@
                                 
                                         const bossHealthText = document.querySelector('.bossheart-text');
                                         bossImage.src = BdamageSrc;
-                                        bossHealthText.textContent = `x ${result.boss_health}`;
+                                        bossHealthText.textContent = x ${result.boss_health};
                                         const currentlives = result.lives  ;
                                      
                                         const healthBar = document.querySelector('.health-bar');
@@ -379,7 +379,7 @@
                                             1: '33%'
                                         }[currentlives] || '0%'; // Default to 0% if lives not found
                                         healthBar.style.width = healthWidth;
-                                        healthText.textContent = `${(currentlives / 3 * 100).toFixed(0)}/100`; // Adjust this if your max lives are different 
+                                        healthText.textContent = ${(currentlives / 3 * 100).toFixed(0)}/100; // Adjust this if your max lives are different 
                                         setTimeout(() => {
                                             // Restore original images or handle next steps
                                             bossImage.src = BidleSrc;
@@ -411,7 +411,7 @@
                                             1: '33%'
                                         }[currentlives] || '0%'; // Default to 0% if lives not found
                                         healthBar.style.width = healthWidth;
-                                        healthText.textContent = `${(currentlives / 3 * 100).toFixed(0)}/100`; // Adjust this if your max lives are different
+                                        healthText.textContent = ${(currentlives / 3 * 100).toFixed(0)}/100; // Adjust this if your max lives are different
                                         // Update UI after animations
                                         console.log(currentlives)
                                         setTimeout(() => {
@@ -480,7 +480,7 @@
                                   bossImage.src =BidleSrc;
                                   knightImage.src = KdeathSrc;
                                   healthBar.style.width = '0%'
-                                  healthText.textContent = `0/100` // Adjust this if your max lives are different 
+                                  healthText.textContent = 0/100 // Adjust this if your max lives are different 
                                 
                                 }, 500); //delay for knight death
 
@@ -503,7 +503,7 @@
 
                                 setTimeout(() => {
                                 const bossHealthText = document.querySelector('.bossheart-text');
-                                bossHealthText.textContent = `x 0`;
+                                bossHealthText.textContent = x 0;
                                 bossImage.src = BdeathSrc;
                                 
                                 }, 1200); //delay for boss death
@@ -550,15 +550,15 @@
                         1: '33%'
                     }[lives] || '0%'; // Default to 0% if lives not found
                     healthBar.style.width = healthWidth;
-                    healthText.textContent = `${(lives / 3 * 100).toFixed(0)}/100`; // Adjust this if your max lives are different
+                    healthText.textContent = ${(lives / 3 * 100).toFixed(0)}/100; // Adjust this if your max lives are different
             
                     // Update boss health text
-                    bossHealthText.textContent = `x ${result.boss_health}`;
+                    bossHealthText.textContent = x ${result.boss_health};
             
                     // Ensure question index is properly set and displayed
                     const questionIndex = result.current_question_index + 1;
                     const questionText = result.next_question.question_text;
-                    document.querySelector('label').textContent = `${questionIndex}. ${questionText}`;
+                    document.querySelector('label').textContent = ${questionIndex}. ${questionText};
 
                     
                     // Update options
@@ -567,7 +567,7 @@
                         const input = option.querySelector('input');
                         const label = option.querySelector('label');
                         input.checked = false; // Clear previous selections
-                        label.textContent = `${Object.keys(result.next_question.options)[index]}: ${Object.values(result.next_question.options)[index]}`;
+                        label.textContent = ${Object.keys(result.next_question.options)[index]}: ${Object.values(result.next_question.options)[index]};
                     });
             
                     // Reset form (if needed)

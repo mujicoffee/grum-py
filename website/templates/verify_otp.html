@@ -46,4 +46,20 @@
 
   <script type="text/javascript" src="{{ url_for('static', filename='otp.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
+
+  <script type="text/javascript">
+    // Add event listener to prevent back navigation
+    window.history.pushState(null, null, window.location.href);
+    window.onpopstate = function () {
+      window.history.go(1);
+    };
+
+    // Additional script to handle session expiration and redirect
+    window.addEventListener('pageshow', function (event) {
+      if (event.persisted) {
+        // Handle page reload
+        window.location.reload();
+      }
+    });
+  </script>
 {% endblock %}

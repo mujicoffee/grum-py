@@ -58,6 +58,3 @@ setTimeout(showQuestionCard, 6000);
 
 // Alternatively, if you have an event listener for the boss animation completion:
 // bossAnimationElement.addEventListener('animationend', showQuestionCard);
-
-
-
