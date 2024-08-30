@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function startCountdown() {
-        let timeRemaining = 120; // 120 seconds countdown
+        let timeRemaining = 300; // 5 minutes countdown
         const timerElement = document.getElementById('timer');
 
         // Debug statement
@@ -173,13 +173,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check reauthentication status immediately on page load
     checkReauthentication();
 
-    // Automatically show the modal after 60 seconds
+    // Automatically show the modal after 25 mins
     setTimeout(() => {
         sessionStorage.setItem('showReauthenticateModal', 'true'); // Save the state
         showReauthenticationModal();
-    }, 600000); // 60 seconds
+    }, 1500000); // 25 minutes 
 
-    // Check reauthentication status every 30 seconds
-    setInterval(checkReauthentication, 30000);
+    // Check reauthentication status every 5 minutes
+    setInterval(checkReauthentication, 300000);
 
 });

@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
@@ -113,6 +116,28 @@
             </div>
         </div>
     </div>
+
+    <div id="sess-overlay" class="sess-overlay"></div>
+    <div id="reloginModal" class="sess-modal" style="display: none;">
+    <div class="sess-modal-content">
+        <h2>Your session is about to expire. To continue, please reauthenticate. Thank you.</h2>
+        <p id="timerDisplay">You will be logged out in <span id="timer">300</span> seconds.</p> <!-- Timer display -->
+        <form id="reauthForm">
+            <div>
+                <label for="reauthEmail">Email address </label>
+                <input type="email" id="reauthEmail" name="email" required autocomplete="off">
+            </div>
+            <div>
+                <label for="reauthPassword">Password</label>
+                <input type="password" id="reauthPassword" name="password" required>
+            </div>
+            <button type="submit">Re-login</button>
+            <button type="button" id="logoutButton">Logout</button>
+        </form>
+    </div>
+</div>
+
+    <script src="{{ url_for('static', filename='session_relogin.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='terminal.js') }}"></script>
 </body>

@@ -16,8 +16,8 @@ def session_timeout(f):
         if last_activity:
             last_activity_time = datetime.strptime(last_activity, '%d/%m/%Y %H:%M:%S')
 
-            # If idle time is more than 2 minutes, log out the user and show a message
-            if now - last_activity_time > timedelta(minutes=2):
+            # If idle time is more than 30 minutes, log out the user and show a message
+            if now - last_activity_time > timedelta(minutes=30):
                 # Clear session token and other session data
                 if 'session_token' in session:
                     session.pop('session_token')
@@ -29,8 +29,8 @@ def session_timeout(f):
                 flash("Your session has expired, please log in again.", 'warning')
                 return redirect(url_for('auth.login'))
             
-            # If idle time is more than 1 minute but less than 5 minutes, prompt reauthentication
-            elif timedelta(minutes=1) < now - last_activity_time <= timedelta(minutes=60):
+            # If idle time is more than 25 minute but less than 30 minutes, prompt reauthentication
+            elif timedelta(minutes=25) < now - last_activity_time <= timedelta(minutes=30):
                 session['reauthenticate'] = True
 
         # Reset last activity time

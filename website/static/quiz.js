@@ -1,7 +1,3 @@
-
-
-
-
 document.addEventListener('DOMContentLoaded', (event) => {
     const navbar = document.getElementById('navbartransition');
     const oldContent = document.getElementById('transition-content');

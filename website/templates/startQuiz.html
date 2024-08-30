@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{quiz.boss_file}}</title>
     <link rel="shortcut icon" type="image/x-icon" href="/static/images/favicon/favicon.ico">
@@ -259,195 +261,93 @@
                 <img src="{{ url_for('static', filename='images/pfp/skull.png') }}" alt="bosspic" class="bosspic">
             </div>
         </div>
-        
-        
-
     </div>
+    <div id="sess-overlay" class="sess-overlay"></div>
+    <div id="reloginModal" class="sess-modal" style="display: none;">
+    <div class="sess-modal-content">
+        <h2>Your session is about to expire. To continue, please reauthenticate. Thank you.</h2>
+        <p id="timerDisplay">You will be logged out in <span id="timer">300</span> seconds.</p> <!-- Timer display -->
+        <form id="reauthForm">
+            <div>
+                <label for="reauthEmail">Email address </label>
+                <input type="email" id="reauthEmail" name="email" required autocomplete="off">
+            </div>
+            <div>
+                <label for="reauthPassword">Password</label>
+                <input type="password" id="reauthPassword" name="password" required>
+            </div>
+            <button type="submit">Re-login</button>
+            <button type="button" id="logoutButton">Logout</button>
+        </form>
+    </div>
+</div>
 
-        <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
-        <script type="text/javascript" src="{{ url_for('static', filename='quiz.js') }}"></script>
-        <script>
 
-            function surrend() {
-                document.getElementById('surrendconfirmation').style.display = 'flex';
-                window.removeEventListener('beforeunload', handleBeforeUnload);
-            }
-            
-            function closeModal() {
-                window.addEventListener('beforeunload', handleBeforeUnload);
-                document.getElementById('surrendconfirmation').style.display = 'none';
-            }
-            
-         
+    <script src="{{ url_for('static', filename='session_relogin.js') }}"></script>
 
-            function handleBeforeUnload(event) {
-                event.preventDefault();
-                event.returnValue = '';
-            }
+    <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='quiz.js') }}"></script>
+    <script>
 
-           
-            
-            // Adding the beforeunload event listener
+        function surrend() {
+            document.getElementById('surrendconfirmation').style.display = 'flex';
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        }
+        
+        function closeModal() {
             window.addEventListener('beforeunload', handleBeforeUnload);
-            document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('surrendconfirmation').style.display = 'none';
+        }
+        
+     
 
-             
-              
+        function handleBeforeUnload(event) {
+            event.preventDefault();
+            event.returnValue = '';
+        }
 
-                const form = document.getElementById('quiz-form');
+       
         
-                form.addEventListener('submit', async (event) => {
-                    event.preventDefault();  // Prevent the form from submitting traditionally
-        
-                    const formData = new FormData(form);  // Create FormData object from the form
-              
-                    try {
-                        const response = await fetch('{{ url_for("student.submit_quiz", quiz_id=quiz.id) }}', {  // Use the submit route URL for AJAX
-                            method: 'POST',
-                            body: formData,
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        });
-        
-                        if (response.ok) {
-                            const result = await response.json();  
+        // Adding the beforeunload event listener
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        document.addEventListener('DOMContentLoaded', () => {
+
+         
+          
+
+            const form = document.getElementById('quiz-form');
+    
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();  // Prevent the form from submitting traditionally
+    
+                const formData = new FormData(form);  // Create FormData object from the form
+          
+                try {
+                    const response = await fetch('{{ url_for("student.submit_quiz", quiz_id=quiz.id) }}', {  // Use the submit route URL for AJAX
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+    
+                    if (response.ok) {
+                        const result = await response.json();  
+                       
+                        if(result.redirect_url){
                            
-                            if(result.redirect_url){
-                               
-                                updateUI(result)
-                            }
+                            updateUI(result)
+                        }
+
+                    
+                        else{
 
                         
-                            else{
-
-                            
 // Add this line to check the server response
-        
-                            // Get image sources
-                            const overlay = document.querySelector('.quiz-overlay');
-                            const quizcard = document.querySelector('.quizcard');
-                            const bossImage = document.querySelector('.boss');
-                            const knightImage = document.querySelector('.knight');
-        
-                            const KdamageSrc = knightImage.getAttribute('data-Kdamage-src');
-                            const KattackSrc = knightImage.getAttribute('data-Kattack-src');
-                            const KhealSrc = knightImage.getAttribute('data-Kheal-src');
-                            const KdeathSrc = knightImage.getAttribute('data-Kdeath-src');
-                            const BidleSrc = bossImage.getAttribute('data-idle-src');
-                            const BattackSrc = bossImage.getAttribute('data-attack-src');
-                            const BdamageSrc = bossImage.getAttribute('data-damage-src');
-                            const BdeathSrc = bossImage.getAttribute('data-death-src');
-        
-                            // Show overlay
-                            overlay.style.display = 'flex';
-                          
-                            if (result.result) {
-                                overlay.textContent = 'Correct!';
-                                overlay.classList.add('correct');
-                            } else {
-                                overlay.textContent = 'Wrong!';
-                                overlay.classList.add('wrong');
-                            }
-                            // Add popOut class to quizcard
-                            
-                            
-                            // Hide the overlay and handle animations and UI update
-                            setTimeout(() => {
-                                overlay.style.display = 'none';  // Hide overlay
-                                quizcard.classList.add('popOut');
-                                quizcard.classList.remove('popIn');
-                                // Trigger animations based on the result
-                                if (result.result) {
-                                    // Correct result - handle animation and image source change
-                                    knightImage.src = KattackSrc;
-                                    setTimeout(() => {   
-                                       
-                                        knightImage.src = '/static/images/knight/idle.gif';
-                                      
-                                
-                                        const bossHealthText = document.querySelector('.bossheart-text');
-                                        bossImage.src = BdamageSrc;
-                                        bossHealthText.textContent = x ${result.boss_health};
-                                        const currentlives = result.lives  ;
-                                     
-                                        const healthBar = document.querySelector('.health-bar');
-                                        const healthText = document.querySelector('.health-text');
-                                        const healthWidth = {
-                                            3: '100%',
-                                            2: '66%',
-                                            1: '33%'
-                                        }[currentlives] || '0%'; // Default to 0% if lives not found
-                                        healthBar.style.width = healthWidth;
-                                        healthText.textContent = ${(currentlives / 3 * 100).toFixed(0)}/100; // Adjust this if your max lives are different 
-                                        setTimeout(() => {
-                                            // Restore original images or handle next steps
-                                            bossImage.src = BidleSrc;
-                                            knightImage.src = '/static/images/knight/idle.gif';
-                                            quizcard.classList.remove('popOut');
-                                            quizcard.classList.remove('popIn');
-                                            
-
-                                            // Update UI after animations
-                                            setTimeout(() => {
-                                                updateUI(result);
-                                            }, 0);  // Delay before updating UI
-                                        },600);  // Delay for boss damage animation
-                                    }, 600);  // Delay for knight attack animation
-                                } else {
-                                    // Incorrect result - handle animation and image source change
-                                    bossImage.src = BattackSrc;
-                                    setTimeout(() => {
-                                        bossImage.src = BidleSrc;
-                                        knightImage.src = KdamageSrc;
-                                    
-                                        const currentlives = result.lives  ;
-                                        const bossHealthText = document.querySelector('.bossheart-text');
-                                        const healthBar = document.querySelector('.health-bar');
-                                        const healthText = document.querySelector('.health-text');
-                                        const healthWidth = {
-                                            3: '100%',
-                                            2: '66%',
-                                            1: '33%'
-                                        }[currentlives] || '0%'; // Default to 0% if lives not found
-                                        healthBar.style.width = healthWidth;
-                                        healthText.textContent = ${(currentlives / 3 * 100).toFixed(0)}/100; // Adjust this if your max lives are different
-                                        // Update UI after animations
-                                        console.log(currentlives)
-                                        setTimeout(() => {
-                                            // Restore original images or handle next steps
-                                            bossImage.src = BidleSrc;
-                                            knightImage.src = '/static/images/knight/idle.gif';
-                                            quizcard.classList.remove('popOut');
-                                            quizcard.classList.remove('popIn');
-                                       
-                                            
-                                            // Update UI after animations
-                                            setTimeout(() => {
-                                                updateUI(result);
-                                            }, 0);  // Delay before updating UI
-                                        },500);  // Delay for knight damage animation
-                                    }, 500);  // Delay for boss attack animation
-                                }
-                            }, 2000);  // Delay before hiding the overlay
-                        }
-                    } else {
-                            console.error('Error:', response.statusText);
-                            document.querySelector('p').textContent = 'Please select an option.';
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        document.querySelector('p').textContent = 'Could not submit the answer. Please retry.';
-                    }
-                });
-                function updateUI(result) {
-
-                    if (result.redirect_url) {
-                        const lives = result.lives;
+    
+                        // Get image sources
+                        const overlay = document.querySelector('.quiz-overlay');
                         const quizcard = document.querySelector('.quizcard');
-                        quizcard.style.display='none'
-                      
-
                         const bossImage = document.querySelector('.boss');
                         const knightImage = document.querySelector('.knight');
     
@@ -459,125 +359,246 @@
                         const BattackSrc = bossImage.getAttribute('data-attack-src');
                         const BdamageSrc = bossImage.getAttribute('data-damage-src');
                         const BdeathSrc = bossImage.getAttribute('data-death-src');
-                        const healthBar = document.querySelector('.health-bar');
-                        const healthText = document.querySelector('.health-text');
-
-
-
-
-                    
-                        if (lives - 1 == 0 ){
-                            const overlayfull = document.querySelector('.fullScreenoverlay');
-                            overlayfull.style.display='flex';
-                            const overlaycontent = document.querySelector('.fulloverlay-content');
-                            overlaycontent.style.color= 'rgb(211, 21, 21)'
-                            overlaycontent.textContent='You Lost.'
-                            setTimeout(() => {
-                               
-                                bossImage.src =BattackSrc;
-                               
-                                setTimeout(() => {
-                                  bossImage.src =BidleSrc;
-                                  knightImage.src = KdeathSrc;
-                                  healthBar.style.width = '0%'
-                                  healthText.textContent = 0/100 // Adjust this if your max lives are different 
-                                
-                                }, 500); //delay for knight death
-
-                            }, 2200); //delay for boss attack
-
-                        }// Redirect if needed
-
-                        else{
-                            const quizcard = document.querySelector('.quizcard');
-                            quizcard.style.display='none'
-                            const overlayfull = document.querySelector('.fullScreenoverlay');
-                            overlayfull.style.display='flex';
-                            const overlaycontent = document.querySelector('.fulloverlay-content');
-                            overlaycontent.style.color= '#10CF43'
-                            overlaycontent.textContent='You Survived !'
-                            setTimeout(() => {
-
-                              
-                                knightImage.src = KattackSrc;
-
-                                setTimeout(() => {
-                                const bossHealthText = document.querySelector('.bossheart-text');
-                                bossHealthText.textContent = x 0;
-                                bossImage.src = BdeathSrc;
-                                
-                                }, 1200); //delay for boss death
-
-                            }, 1500); //delay for knight attack
-
+    
+                        // Show overlay
+                        overlay.style.display = 'flex';
+                      
+                        if (result.result) {
+                            overlay.textContent = 'Correct!';
+                            overlay.classList.add('correct');
+                        } else {
+                            overlay.textContent = 'Wrong!';
+                            overlay.classList.add('wrong');
                         }
-
-
+                        // Add popOut class to quizcard
+                        
+                        
+                        // Hide the overlay and handle animations and UI update
                         setTimeout(() => {
-                            window.removeEventListener('beforeunload', handleBeforeUnload);
+                            overlay.style.display = 'none';  // Hide overlay
+                            quizcard.classList.add('popOut');
+                            quizcard.classList.remove('popIn');
+                            // Trigger animations based on the result
+                            if (result.result) {
+                                // Correct result - handle animation and image source change
+                                knightImage.src = KattackSrc;
+                                setTimeout(() => {   
+                                   
+                                    knightImage.src = '/static/images/knight/idle.gif';
+                                  
+                            
+                                    const bossHealthText = document.querySelector('.bossheart-text');
+                                    bossImage.src = BdamageSrc;
+                                    bossHealthText.textContent = x ${result.boss_health};
+                                    const currentlives = result.lives  ;
+                                 
+                                    const healthBar = document.querySelector('.health-bar');
+                                    const healthText = document.querySelector('.health-text');
+                                    const healthWidth = {
+                                        3: '100%',
+                                        2: '66%',
+                                        1: '33%'
+                                    }[currentlives] || '0%'; // Default to 0% if lives not found
+                                    healthBar.style.width = healthWidth;
+                                    healthText.textContent = ${(currentlives / 3 * 100).toFixed(0)}/100; // Adjust this if your max lives are different 
+                                    setTimeout(() => {
+                                        // Restore original images or handle next steps
+                                        bossImage.src = BidleSrc;
+                                        knightImage.src = '/static/images/knight/idle.gif';
+                                        quizcard.classList.remove('popOut');
+                                        quizcard.classList.remove('popIn');
+                                        
+
+                                        // Update UI after animations
+                                        setTimeout(() => {
+                                            updateUI(result);
+                                        }, 0);  // Delay before updating UI
+                                    },600);  // Delay for boss damage animation
+                                }, 600);  // Delay for knight attack animation
+                            } else {
+                                // Incorrect result - handle animation and image source change
+                                bossImage.src = BattackSrc;
+                                setTimeout(() => {
+                                    bossImage.src = BidleSrc;
+                                    knightImage.src = KdamageSrc;
+                                
+                                    const currentlives = result.lives  ;
+                                    const bossHealthText = document.querySelector('.bossheart-text');
+                                    const healthBar = document.querySelector('.health-bar');
+                                    const healthText = document.querySelector('.health-text');
+                                    const healthWidth = {
+                                        3: '100%',
+                                        2: '66%',
+                                        1: '33%'
+                                    }[currentlives] || '0%'; // Default to 0% if lives not found
+                                    healthBar.style.width = healthWidth;
+                                    healthText.textContent = ${(currentlives / 3 * 100).toFixed(0)}/100; // Adjust this if your max lives are different
+                                    // Update UI after animations
+                                    console.log(currentlives)
+                                    setTimeout(() => {
+                                        // Restore original images or handle next steps
+                                        bossImage.src = BidleSrc;
+                                        knightImage.src = '/static/images/knight/idle.gif';
+                                        quizcard.classList.remove('popOut');
+                                        quizcard.classList.remove('popIn');
+                                   
+                                        
+                                        // Update UI after animations
+                                        setTimeout(() => {
+                                            updateUI(result);
+                                        }, 0);  // Delay before updating UI
+                                    },500);  // Delay for knight damage animation
+                                }, 500);  // Delay for boss attack animation
+                            }
+                        }, 2000);  // Delay before hiding the overlay
+                    }
+                } else {
+                        console.error('Error:', response.statusText);
+                        document.querySelector('p').textContent = 'Please select an option.';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    document.querySelector('p').textContent = 'Could not submit the answer. Please retry.';
+                }
+            });
+            function updateUI(result) {
+
+                if (result.redirect_url) {
+                    const lives = result.lives;
+                    const quizcard = document.querySelector('.quizcard');
+                    quizcard.style.display='none'
+                  
+
+                    const bossImage = document.querySelector('.boss');
+                    const knightImage = document.querySelector('.knight');
+
+                    const KdamageSrc = knightImage.getAttribute('data-Kdamage-src');
+                    const KattackSrc = knightImage.getAttribute('data-Kattack-src');
+                    const KhealSrc = knightImage.getAttribute('data-Kheal-src');
+                    const KdeathSrc = knightImage.getAttribute('data-Kdeath-src');
+                    const BidleSrc = bossImage.getAttribute('data-idle-src');
+                    const BattackSrc = bossImage.getAttribute('data-attack-src');
+                    const BdamageSrc = bossImage.getAttribute('data-damage-src');
+                    const BdeathSrc = bossImage.getAttribute('data-death-src');
+                    const healthBar = document.querySelector('.health-bar');
+                    const healthText = document.querySelector('.health-text');
+
+
+
+
                 
-                            window.location.href = result.redirect_url;  // Redirect after the animation
-                        }, 7000); 
+                    if (lives - 1 == 0 ){
+                        const overlayfull = document.querySelector('.fullScreenoverlay');
+                        overlayfull.style.display='flex';
+                        const overlaycontent = document.querySelector('.fulloverlay-content');
+                        overlaycontent.style.color= 'rgb(211, 21, 21)'
+                        overlaycontent.textContent='You Lost.'
+                        setTimeout(() => {
+                           
+                            bossImage.src =BattackSrc;
+                           
+                            setTimeout(() => {
+                              bossImage.src =BidleSrc;
+                              knightImage.src = KdeathSrc;
+                              healthBar.style.width = '0%'
+                              healthText.textContent = 0/100 // Adjust this if your max lives are different 
+                            
+                            }, 500); //delay for knight death
+
+                        }, 2200); //delay for boss attack
+
+                    }// Redirect if needed
+
+                    else{
+                        const quizcard = document.querySelector('.quizcard');
+                        quizcard.style.display='none'
+                        const overlayfull = document.querySelector('.fullScreenoverlay');
+                        overlayfull.style.display='flex';
+                        const overlaycontent = document.querySelector('.fulloverlay-content');
+                        overlaycontent.style.color= '#10CF43'
+                        overlaycontent.textContent='You Survived !'
+                        setTimeout(() => {
+
+                          
+                            knightImage.src = KattackSrc;
+
+                            setTimeout(() => {
+                            const bossHealthText = document.querySelector('.bossheart-text');
+                            bossHealthText.textContent = x 0;
+                            bossImage.src = BdeathSrc;
+                            
+                            }, 1200); //delay for boss death
+
+                        }, 1500); //delay for knight attack
 
                     }
 
-                    else{
 
-                    
-                    
-                    const lives = result.lives;
-                    document.querySelector('p').textContent = '';
+                    setTimeout(() => {
+                        window.removeEventListener('beforeunload', handleBeforeUnload);
+            
+                        window.location.href = result.redirect_url;  // Redirect after the animation
+                    }, 7000); 
 
-                    const surrend_text = document.querySelector('#surrendText');
-                    surrend_text.textContent ='Are you sure you want to give up ? ';
-                    
-                    // Clear any previous messages
-                    const overlay = document.querySelector('.quiz-overlay');
-                    overlay.textContent = '';
-                    overlay.classList.remove('correct');  
-                    overlay.classList.remove('wrong');
-                      const knightImage = document.querySelector('.knight');
-                    knightImage.src = '/static/images/knight/idle.gif'
-                    const quizcard = document.querySelector('.quizcard');
-                    quizcard.classList.add('popIn')
-                    // Update health bar width and text based on remaining lives
-                    const bossHealthText = document.querySelector('.bossheart-text');
-                    const healthBar = document.querySelector('.health-bar');
-                    const healthText = document.querySelector('.health-text');
-                    const healthWidth = {
-                        3: '100%',
-                        2: '66%',
-                        1: '33%'
-                    }[lives] || '0%'; // Default to 0% if lives not found
-                    healthBar.style.width = healthWidth;
-                    healthText.textContent = ${(lives / 3 * 100).toFixed(0)}/100; // Adjust this if your max lives are different
-            
-                    // Update boss health text
-                    bossHealthText.textContent = x ${result.boss_health};
-            
-                    // Ensure question index is properly set and displayed
-                    const questionIndex = result.current_question_index + 1;
-                    const questionText = result.next_question.question_text;
-                    document.querySelector('label').textContent = ${questionIndex}. ${questionText};
-
-                    
-                    // Update options
-                    const options = document.querySelectorAll('.form-check');
-                    options.forEach((option, index) => {
-                        const input = option.querySelector('input');
-                        const label = option.querySelector('label');
-                        input.checked = false; // Clear previous selections
-                        label.textContent = ${Object.keys(result.next_question.options)[index]}: ${Object.values(result.next_question.options)[index]};
-                    });
-            
-                    // Reset form (if needed)
-                    const form = document.getElementById('quiz-form');
-                    form.reset();
                 }
-             }
-            });
-       
-        </script>
+
+                else{
+
+                
+                
+                const lives = result.lives;
+                document.querySelector('p').textContent = '';
+
+                const surrend_text = document.querySelector('#surrendText');
+                surrend_text.textContent ='Are you sure you want to give up ? ';
+                
+                // Clear any previous messages
+                const overlay = document.querySelector('.quiz-overlay');
+                overlay.textContent = '';
+                overlay.classList.remove('correct');  
+                overlay.classList.remove('wrong');
+                  const knightImage = document.querySelector('.knight');
+                knightImage.src = '/static/images/knight/idle.gif'
+                const quizcard = document.querySelector('.quizcard');
+                quizcard.classList.add('popIn')
+                // Update health bar width and text based on remaining lives
+                const bossHealthText = document.querySelector('.bossheart-text');
+                const healthBar = document.querySelector('.health-bar');
+                const healthText = document.querySelector('.health-text');
+                const healthWidth = {
+                    3: '100%',
+                    2: '66%',
+                    1: '33%'
+                }[lives] || '0%'; // Default to 0% if lives not found
+                healthBar.style.width = healthWidth;
+                healthText.textContent = ${(lives / 3 * 100).toFixed(0)}/100; // Adjust this if your max lives are different
+        
+                // Update boss health text
+                bossHealthText.textContent = x ${result.boss_health};
+        
+                // Ensure question index is properly set and displayed
+                const questionIndex = result.current_question_index + 1;
+                const questionText = result.next_question.question_text;
+                document.querySelector('label').textContent = ${questionIndex}. ${questionText};
+
+                
+                // Update options
+                const options = document.querySelectorAll('.form-check');
+                options.forEach((option, index) => {
+                    const input = option.querySelector('input');
+                    const label = option.querySelector('label');
+                    input.checked = false; // Clear previous selections
+                    label.textContent = ${Object.keys(result.next_question.options)[index]}: ${Object.values(result.next_question.options)[index]};
+                });
+        
+                // Reset form (if needed)
+                const form = document.getElementById('quiz-form');
+                form.reset();
+            }
+         }
+        });
+   
+    </script>
         
         
     

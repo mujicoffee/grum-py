@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Revise Incorrect Questions</title>
     <link rel="shortcut icon" type="image/x-icon" href="/static/images/favicon/favicon.ico">
@@ -89,6 +91,28 @@
         <a href="{{ url_for('student.revise', quiz_id = quiz_id + 1) }}" class="arrow-right">Next &nbsp; &rarr;</a>
     </div>
 
+    <div id="sess-overlay" class="sess-overlay"></div>
+    <div id="reloginModal" class="sess-modal" style="display: none;">
+    <div class="sess-modal-content">
+        <h2>Your session is about to expire. To continue, please reauthenticate. Thank you.</h2>
+        <p id="timerDisplay">You will be logged out in <span id="timer">300</span> seconds.</p> <!-- Timer display -->
+        <form id="reauthForm">
+            <div>
+                <label for="reauthEmail">Email address </label>
+                <input type="email" id="reauthEmail" name="email" required autocomplete="off">
+            </div>
+            <div>
+                <label for="reauthPassword">Password</label>
+                <input type="password" id="reauthPassword" name="password" required>
+            </div>
+            <button type="submit">Re-login</button>
+            <button type="button" id="logoutButton">Logout</button>
+        </form>
+    </div>
+</div>
+
+
+    <script src="{{ url_for('static', filename='session_relogin.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
 
 </body>

@@ -67,7 +67,7 @@ class Classroom(db.Model):
     
 class Logs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='SET NULL'), nullable=True)
     user_role = db.Column(db.String(50), nullable=False)
     classroom_code = db.Column(db.String(5), nullable=True)  # Add this line
     status =  db.Column(db.String(10), nullable=False)

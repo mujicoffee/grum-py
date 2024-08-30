@@ -6,6 +6,7 @@ from .forms import AddStudentsForm, AddStudentsFileForm, LabsheetForm, QuestionF
 from .session import session_timeout
 from .emails import send_student_account_setup_email
 from .week import get_current_week_and_time
+from .logs import log_user_activity
 from . import db, bcrypt
 import pandas as pd
 import random
